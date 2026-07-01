@@ -1,15 +1,28 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import useAuth from './hooks/useAuth';
 import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
+import Register from './pages/Register';
+
+const AppRoutes = () => {
+  const { user, logout } = useAuth();
+  return (
+    <Routes>
+      <Route element={<MainLayout user={user} onLogout={logout} />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
+    </Routes>
+  );
+};
 
 const App = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<MainLayout user={null} onLogout={() => {}} />}>
-          <Route path="/" element={<Home />} />
-        </Route>
-      </Routes>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </BrowserRouter>
   );
 };
