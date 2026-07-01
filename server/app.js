@@ -16,6 +16,7 @@ if (nodeEnv === 'development') {
 }
 
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/listings', require('./routes/listingRoutes'));
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
