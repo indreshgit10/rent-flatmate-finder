@@ -15,6 +15,8 @@ if (nodeEnv === 'development') {
   app.use(morgan('dev'));
 }
 
+app.use('/api/auth', require('./routes/authRoutes'));
+
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
