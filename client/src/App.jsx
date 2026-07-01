@@ -6,6 +6,7 @@ import PrivateRoute from './components/PrivateRoute';
 import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import Listings from './pages/Listings';
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
 
@@ -17,6 +18,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/listings" element={<Listings />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
 
         <Route
