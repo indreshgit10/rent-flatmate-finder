@@ -20,6 +20,7 @@ app.use('/api/listings', require('./routes/listingRoutes'));
 app.use('/api/profile', require('./routes/profileRoutes'));
 app.use('/api/compatibility', require('./routes/compatibilityRoutes'));
 app.use('/api/interests', require('./routes/interestRoutes'));
+app.use('/api/chat', require('./routes/chatRoutes'));
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
