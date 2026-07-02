@@ -2,6 +2,7 @@ const InterestRequest = require('../models/InterestRequest');
 const Listing = require('../models/Listing');
 const TenantProfile = require('../models/TenantProfile');
 const CompatibilityScore = require('../models/CompatibilityScore');
+const User = require('../models/User');
 const AppError = require('../utils/AppError');
 const emailService = require('./emailService');
 
@@ -31,6 +32,26 @@ const sendInterest = async (tenantId, listingId) => {
     owner: listing.owner,
     status: 'pending'
   });
+
+  // Check for high compatibility and fire email
+  try {
+    const tenantUser = await User.findById(tenantId);
+    const scoreDoc = await CompatibilityScore.findOne({ tenant: tenantId, listing: listingId });
+    if (scoreDoc && scoreDoc.score > 80) {
+      const ownerUser = await User.findById(listing.owner);
+      if (ownerUser && tenantUser) {
+        emailService.sendHighCompatibilityAlert(
+          ownerUser, 
+          tenantUser, 
+          listing, 
+          scoreDoc.score, 
+          scoreDoc.explanation
+        ).catch(err => console.error('Failed to send high compatibility alert:', err));
+      }
+    }
+  } catch (err) {
+    console.error('Error while processing high compatibility alert:', err);
+  }
 
   return newRequest;
 };
