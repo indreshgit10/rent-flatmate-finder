@@ -3,6 +3,7 @@ const Listing = require('../models/Listing');
 const TenantProfile = require('../models/TenantProfile');
 const CompatibilityScore = require('../models/CompatibilityScore');
 const AppError = require('../utils/AppError');
+const emailService = require('./emailService');
 
 const sendInterest = async (tenantId, listingId) => {
   const tenantProfile = await TenantProfile.findOne({ tenant: tenantId });
@@ -89,4 +90,29 @@ const getSentInterests = async (tenantId, page = 1, limit = 10) => {
   };
 };
 
-module.exports = { sendInterest, getReceivedInterests, getSentInterests };
+const acceptInterest = async (interestId, ownerId) => {
+  const interest = await InterestRequest.findById(interestId).populate('listing').populate('tenant');
+  if (!interest) {
+    throw new AppError('Interest request not found', 404);
+  }
+
+  if (interest.owner.toString() !== ownerId.toString()) {
+    throw new AppError('You are not authorized to accept this request', 403);
+  }
+
+  if (interest.status === 'accepted') {
+    throw new AppError('Interest request is already accepted', 400);
+  }
+
+  interest.status = 'accepted';
+  await interest.save();
+
+  // Fire and forget email
+  emailService.sendAcceptedNotification(interest.tenant, interest.listing).catch(err => {
+    console.error('Failed to send email:', err);
+  });
+
+  return interest;
+};
+
+module.exports = { sendInterest, getReceivedInterests, getSentInterests, acceptInterest };

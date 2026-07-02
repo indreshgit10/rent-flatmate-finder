@@ -31,4 +31,14 @@ const getSentInterests = async (req, res, next) => {
   }
 };
 
-module.exports = { sendInterest, getReceivedInterests, getSentInterests };
+const acceptInterest = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const request = await interestService.acceptInterest(id, req.user.id);
+    sendSuccess(res, 'Interest request accepted', request);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { sendInterest, getReceivedInterests, getSentInterests, acceptInterest };
