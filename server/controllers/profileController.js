@@ -23,7 +23,17 @@ const getProfile = async (req, res, next) => {
   }
 };
 
+const updateProfile = async (req, res, next) => {
+  try {
+    const profile = await profileService.updateProfile(req.user.id, req.body);
+    sendSuccess(res, 'Profile updated successfully', profile);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createProfile,
-  getProfile
+  getProfile,
+  updateProfile
 };

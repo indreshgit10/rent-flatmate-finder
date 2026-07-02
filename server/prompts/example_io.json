@@ -1,0 +1,21 @@
+{
+  "input": {
+    "listing": {
+      "location": "Downtown Seattle",
+      "rent": 1200,
+      "availableFrom": "2024-09-01",
+      "roomType": "single",
+      "furnishing": "furnished"
+    },
+    "tenantProfile": {
+      "preferredLocation": "Seattle",
+      "budgetMin": 1000,
+      "budgetMax": 1500,
+      "moveInDate": "2024-09-05"
+    }
+  },
+  "output": {
+    "score": 95,
+    "explanation": "Excellent match! The rent is well within your budget, the location matches your preference, and the move-in date aligns perfectly."
+  }
+}

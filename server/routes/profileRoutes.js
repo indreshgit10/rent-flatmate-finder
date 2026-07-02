@@ -7,5 +7,6 @@ const requireRole = require('../middlewares/role');
 
 router.post('/', authenticate, requireRole('tenant'), validateProfile, profileController.createProfile);
 router.get('/', authenticate, requireRole('tenant'), profileController.getProfile);
+router.put('/', authenticate, requireRole('tenant'), validateProfile, profileController.updateProfile);
 
 module.exports = router;
