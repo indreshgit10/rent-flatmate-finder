@@ -137,7 +137,7 @@ const ListingDetail = () => {
               </span>
               {interestRequest.status === 'accepted' && (
                 <button
-                  onClick={() => navigate('/chat')}
+                  onClick={() => navigate(`/chat/${interestRequest._id}`)}
                   className="px-6 py-2 rounded-lg font-medium transition"
                   style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
                 >

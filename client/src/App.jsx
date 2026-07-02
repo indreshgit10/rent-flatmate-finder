@@ -14,6 +14,7 @@ import TenantProfile from './pages/TenantProfile';
 import EditProfile from './pages/EditProfile';
 import ReceivedInterests from './pages/ReceivedInterests';
 import SentInterests from './pages/SentInterests';
+import Chat from './pages/Chat';
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
 
@@ -28,6 +29,15 @@ const AppRoutes = () => {
         <Route path="/listings" element={<Listings />} />
         <Route path="/listings/:id" element={<ListingDetail />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+
+        <Route
+          path="/chat/:id"
+          element={
+            <PrivateRoute allowedRoles={['tenant', 'owner']}>
+              <Chat />
+            </PrivateRoute>
+          }
+        />
 
         <Route
           path="/dashboard/owner/interests"

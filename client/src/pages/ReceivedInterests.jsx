@@ -83,7 +83,7 @@ const ReceivedInterests = () => {
                 )}
                 {req.status === 'accepted' && (
                   <button
-                    onClick={() => navigate('/chat')}
+                    onClick={() => navigate(`/chat/${req._id}`)}
                     className="px-4 py-2 rounded text-white transition font-medium"
                     style={{ backgroundColor: 'var(--color-primary)' }}
                   >
