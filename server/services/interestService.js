@@ -33,4 +33,25 @@ const sendInterest = async (tenantId, listingId) => {
   return newRequest;
 };
 
-module.exports = { sendInterest };
+const getReceivedInterests = async (ownerId, page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const interests = await InterestRequest.find({ owner: ownerId })
+    .populate('tenant', 'name email')
+    .populate('listing', 'location rent')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(parseInt(limit, 10))
+    .lean();
+
+  const totalCount = await InterestRequest.countDocuments({ owner: ownerId });
+
+  return {
+    interests,
+    totalCount,
+    totalPages: Math.ceil(totalCount / limit),
+    currentPage: parseInt(page, 10)
+  };
+};
+
+module.exports = { sendInterest, getReceivedInterests };

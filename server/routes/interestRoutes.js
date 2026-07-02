@@ -6,5 +6,6 @@ const authenticate = require('../middlewares/auth');
 const requireRole = require('../middlewares/role');
 
 router.post('/', authenticate, requireRole('tenant'), validateInterest, interestController.sendInterest);
+router.get('/received', authenticate, requireRole('owner'), interestController.getReceivedInterests);
 
 module.exports = router;
