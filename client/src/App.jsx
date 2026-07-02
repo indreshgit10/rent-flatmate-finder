@@ -10,6 +10,8 @@ import Listings from './pages/Listings';
 import ListingDetail from './pages/ListingDetail';
 import CreateListing from './pages/CreateListing';
 import EditListing from './pages/EditListing';
+import TenantProfile from './pages/TenantProfile';
+import EditProfile from './pages/EditProfile';
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
 
@@ -24,6 +26,23 @@ const AppRoutes = () => {
         <Route path="/listings" element={<Listings />} />
         <Route path="/listings/:id" element={<ListingDetail />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute allowedRoles={['tenant']}>
+              <TenantProfile />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile/edit"
+          element={
+            <PrivateRoute allowedRoles={['tenant']}>
+              <EditProfile />
+            </PrivateRoute>
+          }
+        />
 
         <Route
           path="/dashboard/tenant"
