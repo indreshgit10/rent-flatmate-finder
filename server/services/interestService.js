@@ -1,6 +1,7 @@
 const InterestRequest = require('../models/InterestRequest');
 const Listing = require('../models/Listing');
 const TenantProfile = require('../models/TenantProfile');
+const CompatibilityScore = require('../models/CompatibilityScore');
 const AppError = require('../utils/AppError');
 
 const sendInterest = async (tenantId, listingId) => {
@@ -54,4 +55,38 @@ const getReceivedInterests = async (ownerId, page = 1, limit = 10) => {
   };
 };
 
-module.exports = { sendInterest, getReceivedInterests };
+const getSentInterests = async (tenantId, page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+
+  const interests = await InterestRequest.find({ tenant: tenantId })
+    .populate('listing', 'location rent')
+    .populate('owner', 'name')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(parseInt(limit, 10))
+    .lean();
+
+  const totalCount = await InterestRequest.countDocuments({ tenant: tenantId });
+
+  // Attach compatibility scores
+  const interestsWithScores = await Promise.all(interests.map(async (interest) => {
+    const scoreDoc = await CompatibilityScore.findOne({ 
+      tenant: tenantId, 
+      listing: interest.listing._id 
+    }).lean();
+    
+    return {
+      ...interest,
+      compatibilityScore: scoreDoc ? scoreDoc.score : null
+    };
+  }));
+
+  return {
+    interests: interestsWithScores,
+    totalCount,
+    totalPages: Math.ceil(totalCount / limit),
+    currentPage: parseInt(page, 10)
+  };
+};
+
+module.exports = { sendInterest, getReceivedInterests, getSentInterests };

@@ -21,4 +21,14 @@ const getReceivedInterests = async (req, res, next) => {
   }
 };
 
-module.exports = { sendInterest, getReceivedInterests };
+const getSentInterests = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const result = await interestService.getSentInterests(req.user.id, page, limit);
+    sendSuccess(res, 'Sent interests retrieved', result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { sendInterest, getReceivedInterests, getSentInterests };
