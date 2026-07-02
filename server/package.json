@@ -8,11 +8,16 @@
     "dev": "nodemon server.js",
     "test": "jest --runInBand --forceExit"
   },
-  "keywords": ["rent", "flatmate", "mern"],
+  "keywords": [
+    "rent",
+    "flatmate",
+    "mern"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
