@@ -12,6 +12,7 @@ import CreateListing from './pages/CreateListing';
 import EditListing from './pages/EditListing';
 import TenantProfile from './pages/TenantProfile';
 import EditProfile from './pages/EditProfile';
+import ReceivedInterests from './pages/ReceivedInterests';
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
 
@@ -26,6 +27,15 @@ const AppRoutes = () => {
         <Route path="/listings" element={<Listings />} />
         <Route path="/listings/:id" element={<ListingDetail />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+
+        <Route
+          path="/dashboard/owner/interests"
+          element={
+            <PrivateRoute allowedRoles={['owner']}>
+              <ReceivedInterests />
+            </PrivateRoute>
+          }
+        />
 
         <Route
           path="/profile"

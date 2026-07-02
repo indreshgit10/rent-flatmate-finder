@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { getListingById, markListingAsFilled } from '../services/listingService';
+import { sendInterest, getSentInterests } from '../services/interestService';
 
 const ListingDetail = () => {
   const { id } = useParams();
@@ -11,6 +12,9 @@ const ListingDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [fillLoading, setFillLoading] = useState(false);
+  
+  const [interestRequest, setInterestRequest] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -26,6 +30,23 @@ const ListingDetail = () => {
     fetchListing();
   }, [id]);
 
+  useEffect(() => {
+    if (user?.role === 'tenant') {
+      const fetchInterest = async () => {
+        try {
+          const { data } = await getSentInterests({ limit: 100 });
+          const existing = data.data.interests.find(i => i.listing._id === id || i.listing === id);
+          if (existing) {
+            setInterestRequest(existing);
+          }
+        } catch (err) {
+          console.error('Failed to fetch interests', err);
+        }
+      };
+      fetchInterest();
+    }
+  }, [id, user]);
+
   const handleFill = async () => {
     try {
       setFillLoading(true);
@@ -35,6 +56,19 @@ const ListingDetail = () => {
       alert(err.response?.data?.message || 'Failed to mark as filled');
     } finally {
       setFillLoading(false);
+    }
+  };
+
+  const handleExpressInterest = async () => {
+    try {
+      setActionLoading(true);
+      const { data } = await sendInterest(id);
+      setInterestRequest(data.data);
+      alert('Interest sent successfully!');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to send interest');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -85,10 +119,32 @@ const ListingDetail = () => {
         </div>
 
         <div className="flex gap-4 pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
-          {isTenant && (
-            <button className="px-6 py-2 rounded-lg font-medium transition" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
-              Express Interest
+          {isTenant && !interestRequest && (
+            <button 
+              onClick={handleExpressInterest}
+              disabled={actionLoading || listing.isFilled}
+              className="px-6 py-2 rounded-lg font-medium transition disabled:opacity-50" 
+              style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
+            >
+              {actionLoading ? 'Sending...' : 'Express Interest'}
             </button>
+          )}
+
+          {isTenant && interestRequest && (
+            <div className="flex items-center gap-4">
+              <span className="px-4 py-2 rounded-lg border font-medium capitalize" style={{ backgroundColor: 'var(--color-surface-raised)', borderColor: 'var(--color-border)', color: 'var(--color-text)' }}>
+                Status: {interestRequest.status}
+              </span>
+              {interestRequest.status === 'accepted' && (
+                <button
+                  onClick={() => navigate('/chat')}
+                  className="px-6 py-2 rounded-lg font-medium transition"
+                  style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
+                >
+                  Go to Chat
+                </button>
+              )}
+            </div>
           )}
           
           {isOwner && !listing.isFilled && (
