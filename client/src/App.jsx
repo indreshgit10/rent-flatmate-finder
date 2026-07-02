@@ -8,6 +8,8 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Listings from './pages/Listings';
 import ListingDetail from './pages/ListingDetail';
+import CreateListing from './pages/CreateListing';
+import EditListing from './pages/EditListing';
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
 
@@ -36,6 +38,22 @@ const AppRoutes = () => {
           element={
             <PrivateRoute allowedRoles={['owner']}>
               <div style={{ color: 'var(--color-text-muted)' }}>Owner Dashboard -- coming soon</div>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/listings/create"
+          element={
+            <PrivateRoute allowedRoles={['owner']}>
+              <CreateListing />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/listings/:id/edit"
+          element={
+            <PrivateRoute allowedRoles={['owner']}>
+              <EditListing />
             </PrivateRoute>
           }
         />
