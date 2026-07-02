@@ -20,7 +20,7 @@ const registerUser = async ({ name, email, password, role }) => {
 const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email }).select('+password');
   if (!user) throw new AppError('Invalid email or password', 401);
-  if (user.isDisabled) throw new AppError('Account has been disabled', 403);
+  if (user.isDisabled) throw new AppError('Account has been disabled', 401);
 
   const isMatch = await user.comparePassword(password);
   if (!isMatch) throw new AppError('Invalid email or password', 401);

@@ -15,7 +15,7 @@ const authenticate = async (req, _res, next) => {
 
     const user = await User.findById(decoded.id).select('role isDisabled');
     if (!user) return next(new AppError('User not found', 401));
-    if (user.isDisabled) return next(new AppError('Account has been disabled', 403));
+    if (user.isDisabled) return next(new AppError('Account has been disabled', 401));
 
     req.user = { id: decoded.id, role: decoded.role };
     next();

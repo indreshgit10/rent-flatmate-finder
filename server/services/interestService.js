@@ -112,12 +112,12 @@ const getSentInterests = async (tenantId, page = 1, limit = 10) => {
 };
 
 const acceptInterest = async (interestId, ownerId) => {
-  const interest = await InterestRequest.findById(interestId).populate('listing').populate('tenant');
+  const interest = await InterestRequest.findById(interestId).populate('listing').populate('tenant').populate('owner');
   if (!interest) {
     throw new AppError('Interest request not found', 404);
   }
 
-  if (interest.owner.toString() !== ownerId.toString()) {
+  if (interest.owner._id.toString() !== ownerId.toString()) {
     throw new AppError('You are not authorized to accept this request', 403);
   }
 
@@ -133,7 +133,7 @@ const acceptInterest = async (interestId, ownerId) => {
   await interest.save();
 
   // Fire and forget email
-  emailService.sendAcceptedNotification(interest.tenant, interest.listing).catch(err => {
+  emailService.sendAcceptedNotification(interest.tenant, interest.listing, interest._id, interest.owner.name).catch(err => {
     console.error('Failed to send email:', err);
   });
 
