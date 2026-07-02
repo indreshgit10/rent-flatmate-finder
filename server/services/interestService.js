@@ -104,6 +104,10 @@ const acceptInterest = async (interestId, ownerId) => {
     throw new AppError('Interest request is already accepted', 400);
   }
 
+  if (interest.status === 'declined') {
+    throw new AppError('Cannot accept a declined request', 400);
+  }
+
   interest.status = 'accepted';
   await interest.save();
 
@@ -115,4 +119,29 @@ const acceptInterest = async (interestId, ownerId) => {
   return interest;
 };
 
-module.exports = { sendInterest, getReceivedInterests, getSentInterests, acceptInterest };
+const declineInterest = async (interestId, ownerId) => {
+  const interest = await InterestRequest.findById(interestId).populate('listing').populate('tenant');
+  if (!interest) {
+    throw new AppError('Interest request not found', 404);
+  }
+
+  if (interest.owner.toString() !== ownerId.toString()) {
+    throw new AppError('You are not authorized to decline this request', 403);
+  }
+
+  if (interest.status === 'declined') {
+    throw new AppError('Interest request is already declined', 400);
+  }
+
+  interest.status = 'declined';
+  await interest.save();
+
+  // Fire and forget email
+  emailService.sendDeclinedNotification(interest.tenant, interest.listing).catch(err => {
+    console.error('Failed to send email:', err);
+  });
+
+  return interest;
+};
+
+module.exports = { sendInterest, getReceivedInterests, getSentInterests, acceptInterest, declineInterest };

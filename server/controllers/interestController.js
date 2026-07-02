@@ -41,4 +41,14 @@ const acceptInterest = async (req, res, next) => {
   }
 };
 
-module.exports = { sendInterest, getReceivedInterests, getSentInterests, acceptInterest };
+const declineInterest = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const request = await interestService.declineInterest(id, req.user.id);
+    sendSuccess(res, 'Interest request declined', request);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { sendInterest, getReceivedInterests, getSentInterests, acceptInterest, declineInterest };
