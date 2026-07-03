@@ -1,5 +1,6 @@
 import api from './api';
 
+export const getOwnerListings = (params) => api.get('/api/listings/owner/me', { params });
 export const getListings = (params) => api.get('/api/listings', { params });
 export const getListingById = (id) => api.get(`/api/listings/${id}`);
 export const createListing = (data) => api.post('/api/listings', data);
