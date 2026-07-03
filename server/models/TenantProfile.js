@@ -11,11 +11,10 @@ const tenantProfileSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-tenantProfileSchema.pre('save', function (next) {
+tenantProfileSchema.pre('save', function () {
   if (this.budgetMin >= this.budgetMax) {
-    return next(new Error('budgetMin must be less than budgetMax'));
+    throw new Error('budgetMin must be less than budgetMax');
   }
-  next();
 });
 
 module.exports = mongoose.model('TenantProfile', tenantProfileSchema);
