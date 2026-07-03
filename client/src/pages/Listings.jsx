@@ -43,6 +43,9 @@ const Listings = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
 
+  const [otherListings, setOtherListings] = useState([]);
+  const [loadingOther, setLoadingOther] = useState(false);
+
   const [filters, setFilters] = useState({ location: '', minBudget: '', maxBudget: '' });
   const [applied, setApplied] = useState({});
   const initFetched = useRef(false);
@@ -68,12 +71,25 @@ const Listings = () => {
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
+    setOtherListings([]);
     try {
       const params = { page, limit: 12, ...applied };
       Object.keys(params).forEach((k) => (params[k] === '' || params[k] === null || params[k] === undefined) && delete params[k]);
       const { data } = await getListings(params);
       setListings(data.data.listings);
       setTotalCount(data.data.totalCount);
+      
+      if (data.data.listings.length === 0 && Object.keys(params).length > 2) {
+        setLoadingOther(true);
+        try {
+          const { data: otherData } = await getListings({ page: 1, limit: 6 });
+          setOtherListings(otherData.data.listings);
+        } catch (e) {
+          setOtherListings([]);
+        } finally {
+          setLoadingOther(false);
+        }
+      }
     } catch {
       setListings([]);
     } finally {
@@ -127,10 +143,25 @@ const Listings = () => {
           {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
         </div>
       ) : listings.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--color-text-muted)' }}>
-          <p style={{ fontSize: '1.1rem' }}>No listings match your filters.</p>
-          <button onClick={handleReset} style={{ marginTop: '1rem', padding: '0.5rem 1.2rem', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontFamily: 'inherit' }}>Clear Filters</button>
-        </div>
+        <>
+          <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--color-text-muted)', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', marginBottom: '2rem' }}>
+            <p style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>No listings match your strict filters.</p>
+            <button onClick={handleReset} style={{ padding: '0.65rem 1.25rem', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>Clear Filters</button>
+          </div>
+          
+          {loadingOther ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
+              {Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)}
+            </div>
+          ) : otherListings.length > 0 && (
+            <div style={{ marginTop: '2rem' }}>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '1rem', borderTop: '1px solid var(--color-border)', paddingTop: '2rem' }}>Other listings you might like</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+                {otherListings.map((l) => <ListingCard key={l._id} listing={l} score={null} />)}
+              </div>
+            </div>
+          )}
+        </>
       ) : (
         <>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>{totalCount} listing{totalCount !== 1 ? 's' : ''} found</p>
