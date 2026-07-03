@@ -65,24 +65,22 @@ const ListingDetail = () => {
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>{listing.location}</h1>
-          <div style={{ display: 'flex', gap: '1rem', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-            <span>Available from: {new Date(listing.availableFrom).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-            <span>•</span>
-            <span style={{ textTransform: 'capitalize' }}>{listing.roomType} Room</span>
-            <span>•</span>
-            <span style={{ textTransform: 'capitalize' }}>{listing.furnishing}</span>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>{listing.location}</h1>
+          <div style={{ display: 'flex', gap: '0.75rem', color: 'var(--color-text)', fontSize: '0.95rem', fontWeight: 500, flexWrap: 'wrap' }}>
+            <span style={{ padding: '0.25rem 0.75rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-full)' }}>Available from: {new Date(listing.availableFrom).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+            <span style={{ padding: '0.25rem 0.75rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-full)', textTransform: 'capitalize' }}>{listing.roomType} Room</span>
+            <span style={{ padding: '0.25rem 0.75rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-full)', textTransform: 'capitalize' }}>{listing.furnishing}</span>
           </div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--color-primary)' }}>
+          <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-primary)', letterSpacing: '-0.5px' }}>
             {listing.rent.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}
-            <span style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--color-text-muted)' }}>/mo</span>
+            <span style={{ fontSize: '1.25rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>/mo</span>
           </div>
           {listing.isFilled && (
-            <span style={{ display: 'inline-block', marginTop: '0.5rem', padding: '0.2rem 0.6rem', background: 'var(--color-surface-raised)', color: 'var(--color-text-muted)', borderRadius: '4px', fontSize: '0.85rem' }}>
+            <span style={{ display: 'inline-block', marginTop: '0.5rem', padding: '0.35rem 0.85rem', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--color-danger)', borderRadius: 'var(--radius-full)', fontSize: '0.85rem', fontWeight: 600 }}>
               Marked as Filled
             </span>
           )}
@@ -90,13 +88,13 @@ const ListingDetail = () => {
       </div>
 
       {listing.photos && listing.photos.length > 0 ? (
-        <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '2.5rem' }}>
           {listing.photos.map((photo, i) => (
-            <img key={i} src={photo} alt={`Room view ${i + 1}`} style={{ height: '300px', borderRadius: '10px', objectFit: 'cover' }} />
+            <img key={i} src={photo} alt={`Room view ${i + 1}`} style={{ height: '350px', borderRadius: 'var(--radius-lg)', objectFit: 'cover', boxShadow: 'var(--shadow-md)' }} />
           ))}
         </div>
       ) : (
-        <div style={{ height: '300px', background: 'var(--color-surface-raised)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
+        <div style={{ height: '300px', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)', marginBottom: '2.5rem', border: '1px dashed var(--color-border)' }}>
           No photos available
         </div>
       )}
@@ -121,17 +119,19 @@ const ListingDetail = () => {
         </div>
 
         <div>
-          <div style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: '10px', border: '1px solid var(--color-border)', position: 'sticky', top: '100px' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>Owner Info</h3>
-            <p style={{ color: 'var(--color-text)', marginBottom: '1.5rem' }}>{listing.owner?.name || 'Unknown'}</p>
+          <div style={{ background: 'var(--color-surface)', padding: '2rem', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', position: 'sticky', top: '100px', boxShadow: 'var(--shadow-md)' }}>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Owner Info</h3>
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem', fontWeight: 500 }}>{listing.owner?.name || 'Unknown'}</p>
 
             {isOwner && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {!listing.isFilled && (
                   <button 
                     onClick={handleMarkFilled} 
                     disabled={actionLoading}
-                    style={{ padding: '0.75rem', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '6px', cursor: actionLoading ? 'not-allowed' : 'pointer', fontWeight: 600 }}
+                    style={{ padding: '0.85rem', background: 'var(--color-primary)', color: '#ffffff', border: 'none', borderRadius: 'var(--radius-md)', cursor: actionLoading ? 'not-allowed' : 'pointer', fontWeight: 600, transition: 'background-color 0.2s' }}
+                    onMouseEnter={(e) => !actionLoading && (e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)')}
+                    onMouseLeave={(e) => !actionLoading && (e.currentTarget.style.backgroundColor = 'var(--color-primary)')}
                   >
                     Mark as Filled
                   </button>
@@ -139,7 +139,9 @@ const ListingDetail = () => {
                 <button 
                   onClick={handleDelete}
                   disabled={actionLoading}
-                  style={{ padding: '0.75rem', background: 'transparent', color: 'var(--color-danger)', border: '1px solid var(--color-danger)', borderRadius: '6px', cursor: actionLoading ? 'not-allowed' : 'pointer', fontWeight: 600 }}
+                  style={{ padding: '0.85rem', background: 'transparent', color: 'var(--color-danger)', border: '1px solid var(--color-danger)', borderRadius: 'var(--radius-md)', cursor: actionLoading ? 'not-allowed' : 'pointer', fontWeight: 600, transition: 'background-color 0.2s' }}
+                  onMouseEnter={(e) => !actionLoading && (e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)')}
+                  onMouseLeave={(e) => !actionLoading && (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
                   Delete Listing
                 </button>
@@ -149,7 +151,9 @@ const ListingDetail = () => {
             {isTenant && !listing.isFilled && (
               <button 
                 onClick={handleExpressInterest}
-                style={{ width: '100%', padding: '0.75rem', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
+                style={{ width: '100%', padding: '0.85rem', background: 'var(--color-primary)', color: '#ffffff', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 600, transition: 'background-color 0.2s' }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-primary)')}
               >
                 Express Interest
               </button>
@@ -158,7 +162,9 @@ const ListingDetail = () => {
             {!user && (
               <button 
                 onClick={() => navigate('/login')}
-                style={{ width: '100%', padding: '0.75rem', background: 'var(--color-surface-raised)', color: 'var(--color-text)', border: '1px solid var(--color-border)', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
+                style={{ width: '100%', padding: '0.85rem', background: 'transparent', color: 'var(--color-text)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 600, transition: 'background-color 0.2s' }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-surface-raised)')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
                 Log in to contact owner
               </button>

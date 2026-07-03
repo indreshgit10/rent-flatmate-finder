@@ -6,7 +6,7 @@ const SkeletonCard = () => (
   <div style={{
     background: 'var(--color-surface)',
     border: '1px solid var(--color-border)',
-    borderRadius: '10px',
+    borderRadius: 'var(--radius-lg)',
     padding: '1.25rem',
     display: 'flex',
     flexDirection: 'column',
@@ -16,7 +16,7 @@ const SkeletonCard = () => (
       <div key={w} style={{
         height: '14px',
         width: `${w}%`,
-        borderRadius: '4px',
+        borderRadius: 'var(--radius-sm)',
         background: 'var(--color-surface-raised)',
         animation: 'pulse 1.5s ease-in-out infinite',
       }} />
@@ -25,13 +25,12 @@ const SkeletonCard = () => (
 );
 
 const inputStyle = {
-  padding: '0.5rem 0.75rem',
-  background: 'var(--color-surface-raised)',
+  padding: '0.65rem 0.85rem',
+  background: 'var(--color-surface)',
   border: '1px solid var(--color-border)',
-  borderRadius: '6px',
+  borderRadius: 'var(--radius-md)',
   color: 'var(--color-text)',
   fontSize: '0.9rem',
-  outline: 'none',
   width: '100%',
 };
 
@@ -72,30 +71,31 @@ const Listings = () => {
 
       <div style={{
         display: 'flex',
-        gap: '0.75rem',
+        gap: '1rem',
         flexWrap: 'wrap',
         alignItems: 'flex-end',
-        marginBottom: '1.5rem',
-        padding: '1rem',
+        marginBottom: '2rem',
+        padding: '1.25rem',
         background: 'var(--color-surface)',
-        borderRadius: '10px',
+        borderRadius: 'var(--radius-lg)',
         border: '1px solid var(--color-border)',
+        boxShadow: 'var(--shadow-sm)',
       }}>
         <div style={{ flex: '1 1 180px' }}>
-          <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Location</label>
+          <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.85rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>Location</label>
           <input id="filter-location" value={filters.location} onChange={(e) => setFilters((p) => ({ ...p, location: e.target.value }))} placeholder="e.g. Mumbai" style={inputStyle} />
         </div>
         <div style={{ flex: '1 1 130px' }}>
-          <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Min Budget</label>
+          <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.85rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>Min Budget</label>
           <input id="filter-min" type="number" value={filters.minBudget} onChange={(e) => setFilters((p) => ({ ...p, minBudget: e.target.value }))} placeholder="0" style={inputStyle} />
         </div>
         <div style={{ flex: '1 1 130px' }}>
-          <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Max Budget</label>
+          <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.85rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>Max Budget</label>
           <input id="filter-max" type="number" value={filters.maxBudget} onChange={(e) => setFilters((p) => ({ ...p, maxBudget: e.target.value }))} placeholder="100000" style={inputStyle} />
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button id="filter-apply" onClick={handleApply} style={{ padding: '0.5rem 1.1rem', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '6px', fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600 }}>Apply</button>
-          <button id="filter-reset" onClick={handleReset} style={{ padding: '0.5rem 1.1rem', background: 'var(--color-surface-raised)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', borderRadius: '6px', fontFamily: 'inherit', cursor: 'pointer' }}>Reset</button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button id="filter-apply" onClick={handleApply} style={{ padding: '0.65rem 1.25rem', background: 'var(--color-primary)', color: '#ffffff', border: 'none', borderRadius: 'var(--radius-md)', fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}>Apply</button>
+          <button id="filter-reset" onClick={handleReset} style={{ padding: '0.65rem 1.25rem', background: 'transparent', color: 'var(--color-text)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', fontFamily: 'inherit', cursor: 'pointer', fontWeight: 600, transition: 'background-color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-surface-raised)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>Reset</button>
         </div>
       </div>
 

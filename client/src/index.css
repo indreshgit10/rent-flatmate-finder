@@ -70,6 +70,17 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+input, select, textarea {
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
 a {
   color: var(--color-primary);
   text-decoration: none;

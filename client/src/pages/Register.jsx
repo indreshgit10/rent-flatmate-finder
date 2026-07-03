@@ -7,13 +7,12 @@ const ROLE_DASHBOARDS = { tenant: '/dashboard/tenant', owner: '/dashboard/owner'
 
 const inputStyle = {
   width: '100%',
-  padding: '0.65rem 0.85rem',
-  background: 'var(--color-surface-raised)',
+  padding: '0.75rem 1rem',
+  background: 'var(--color-surface)',
   border: '1px solid var(--color-border)',
-  borderRadius: '6px',
+  borderRadius: 'var(--radius-md)',
   color: 'var(--color-text)',
   fontSize: '0.95rem',
-  outline: 'none',
 };
 
 const Register = () => {
@@ -118,18 +117,20 @@ const Register = () => {
           type="submit"
           disabled={loading}
           style={{
-            marginTop: '0.5rem',
-            padding: '0.75rem',
+            marginTop: '1rem',
+            padding: '0.85rem',
             background: loading ? 'var(--color-surface-raised)' : 'var(--color-primary)',
-            color: loading ? 'var(--color-text-muted)' : '#fff',
+            color: loading ? 'var(--color-text-muted)' : '#ffffff',
             border: 'none',
-            borderRadius: '6px',
+            borderRadius: 'var(--radius-md)',
             fontFamily: 'inherit',
             fontSize: '1rem',
             fontWeight: 600,
             cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'background 0.2s',
+            transition: 'background-color 0.2s',
           }}
+          onMouseEnter={(e) => !loading && (e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)')}
+          onMouseLeave={(e) => !loading && (e.currentTarget.style.backgroundColor = 'var(--color-primary)')}
         >
           {loading ? 'Creating account...' : 'Register'}
         </button>
