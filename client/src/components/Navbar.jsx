@@ -53,68 +53,71 @@ const Navbar = ({ user, onLogout }) => {
           FlatMate
         </Link>
 
-        {/* Desktop Links */}
-        <div className="navbar-links">
-          <Link to="/listings" style={linkStyle(isActive('/listings'))}>
-            <Building size={18} />
-            Listings
-          </Link>
+        {/* Desktop & Mobile Right Container */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginLeft: 'auto' }}>
+          {/* Desktop Links */}
+          <div className="navbar-links">
+            <Link to="/listings" style={linkStyle(isActive('/listings'))}>
+              <Building size={18} />
+              Listings
+            </Link>
 
-          {user ? (
-            <>
-              {dashboardPath && (
-                <Link to={dashboardPath} style={linkStyle(location.pathname.includes('/dashboard'))}>
-                  <LayoutDashboard size={18} />
-                  {user.role === 'admin' ? 'Admin' : 'Dashboard'}
+            {user ? (
+              <>
+                {dashboardPath && (
+                  <Link to={dashboardPath} style={linkStyle(location.pathname.includes('/dashboard'))}>
+                    <LayoutDashboard size={18} />
+                    {user.role === 'admin' ? 'Admin' : 'Dashboard'}
+                  </Link>
+                )}
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '0.4rem',
+                    background: 'transparent', color: 'var(--color-text-muted)',
+                    border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)',
+                    padding: '0.4rem 1rem', cursor: 'pointer', fontFamily: 'inherit',
+                    fontSize: '0.9rem', fontWeight: 600, transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text)'; e.currentTarget.style.borderColor = 'var(--color-text-muted)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-muted)'; e.currentTarget.style.borderColor = 'var(--color-border)'; }}
+                >
+                  <LogOut size={16} /> Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" style={linkStyle(isActive('/login'))}>
+                  <LogIn size={18} /> Log in
                 </Link>
-              )}
-              <button
-                onClick={handleLogout}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '0.4rem',
-                  background: 'transparent', color: 'var(--color-text-muted)',
-                  border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)',
-                  padding: '0.4rem 1rem', cursor: 'pointer', fontFamily: 'inherit',
-                  fontSize: '0.9rem', fontWeight: 600, transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text)'; e.currentTarget.style.borderColor = 'var(--color-text-muted)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-muted)'; e.currentTarget.style.borderColor = 'var(--color-border)'; }}
-              >
-                <LogOut size={16} /> Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" style={linkStyle(isActive('/login'))}>
-                <LogIn size={18} /> Log in
-              </Link>
-              <Link
-                to="/register"
-                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'var(--color-primary)', color: '#ffffff', borderRadius: 'var(--radius-md)', padding: '0.5rem 1.25rem', fontWeight: 600, transition: 'background-color 0.2s', textDecoration: 'none' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
-              >
-                <UserPlus size={18} /> Sign up
-              </Link>
-            </>
-          )}
+                <Link
+                  to="/register"
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'var(--color-primary)', color: '#ffffff', borderRadius: 'var(--radius-md)', padding: '0.5rem 1.25rem', fontWeight: 600, transition: 'background-color 0.2s', textDecoration: 'none' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
+                >
+                  <UserPlus size={18} /> Sign up
+                </Link>
+              </>
+            )}
 
-          <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--color-border)', margin: '0 0.5rem' }}></div>
-          <ThemeToggle />
-        </div>
-
-        {/* Mobile Right: theme toggle + hamburger */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div className="hamburger-btn">
+            <div style={{ width: '1px', height: '24px', backgroundColor: 'var(--color-border)', margin: '0 0.5rem' }}></div>
             <ThemeToggle />
           </div>
-          <button
-            className="hamburger-btn"
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+
+          {/* Mobile Right: theme toggle + hamburger */}
+          <div className="mobile-only" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div className="hamburger-btn">
+              <ThemeToggle />
+            </div>
+            <button
+              className="hamburger-btn"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Toggle menu"
+            >
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </nav>
 

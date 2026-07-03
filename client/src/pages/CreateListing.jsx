@@ -74,7 +74,7 @@ const CreateListing = () => {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '4rem auto', width: '100%' }}>
+    <div style={{ maxWidth: '800px', margin: '4rem auto', width: '100%' }}>
       <div style={{ backgroundColor: 'var(--color-surface)', padding: '2.5rem', borderRadius: '12px', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)' }}>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--color-text)' }}>Create New Listing</h1>
         <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem' }}>Fill in the details to post your property.</p>
