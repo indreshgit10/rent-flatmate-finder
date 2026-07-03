@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import useAuth from './hooks/useAuth';
 import MainLayout from './layouts/MainLayout';
 import PrivateRoute from './components/PrivateRoute';
@@ -124,7 +125,9 @@ const AppRoutes = () => {
 const App = () => (
   <BrowserRouter>
     <AuthProvider>
-      <AppRoutes />
+      <ThemeProvider>
+        <AppRoutes />
+      </ThemeProvider>
     </AuthProvider>
   </BrowserRouter>
 );

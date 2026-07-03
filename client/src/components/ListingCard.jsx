@@ -17,17 +17,17 @@ const ListingCard = ({ listing, score }) => {
       style={{
         background: 'var(--color-surface)',
         border: '1px solid var(--color-border)',
-        borderRadius: '10px',
+        borderRadius: 'var(--radius-lg)',
         padding: '1.25rem',
         cursor: 'pointer',
-        transition: 'transform 0.15s, box-shadow 0.15s',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease',
         display: 'flex',
         flexDirection: 'column',
-        gap: '0.5rem',
+        gap: '0.75rem',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-3px)';
-        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.3)';
+        e.currentTarget.style.transform = 'translateY(-4px)';
+        e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateY(0)';
