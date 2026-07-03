@@ -19,7 +19,10 @@ const Register = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '', role: 'tenant' });
+  const [form, setForm] = useState({ 
+    name: '', email: '', password: '', confirm: '', role: 'tenant',
+    preferredLocation: '', budgetMin: '', budgetMax: ''
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -36,7 +39,13 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const { data } = await registerApi({ name: form.name, email: form.email, password: form.password, role: form.role });
+      const payload = { name: form.name, email: form.email, password: form.password, role: form.role };
+      if (form.role === 'tenant') {
+        payload.preferredLocation = form.preferredLocation;
+        payload.budgetMin = form.budgetMin;
+        payload.budgetMax = form.budgetMax;
+      }
+      const { data } = await registerApi(payload);
       login(data.data.token);
       navigate(ROLE_DASHBOARDS[form.role] || '/');
     } catch (err) {
@@ -70,22 +79,22 @@ const Register = () => {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div>
           <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Full Name</label>
-          <input id="register-name" name="name" value={form.name} onChange={handleChange} required style={inputStyle} placeholder="Jane Doe" />
+          <input id="register-name" name="name" value={form.name} onChange={handleChange} required style={inputStyle} placeholder="Your Name" autoComplete="off" />
         </div>
 
         <div>
           <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Email</label>
-          <input id="register-email" type="email" name="email" value={form.email} onChange={handleChange} required style={inputStyle} placeholder="you@example.com" />
+          <input id="register-email" type="email" name="email" value={form.email} onChange={handleChange} required style={inputStyle} placeholder="email@domain.com" autoComplete="off" />
         </div>
 
         <div>
           <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Password</label>
-          <input id="register-password" type="password" name="password" value={form.password} onChange={handleChange} required minLength={8} style={inputStyle} placeholder="Min 8 characters" />
+          <input id="register-password" type="password" name="password" value={form.password} onChange={handleChange} required minLength={8} style={inputStyle} placeholder="********" autoComplete="new-password" />
         </div>
 
         <div>
           <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Confirm Password</label>
-          <input id="register-confirm" type="password" name="confirm" value={form.confirm} onChange={handleChange} required style={inputStyle} placeholder="Repeat password" />
+          <input id="register-confirm" type="password" name="confirm" value={form.confirm} onChange={handleChange} required style={inputStyle} placeholder="********" autoComplete="new-password" />
         </div>
 
         <div>
@@ -111,6 +120,26 @@ const Register = () => {
             ))}
           </div>
         </div>
+
+        {form.role === 'tenant' && (
+          <div style={{ padding: '1rem', background: 'var(--color-surface-raised)', borderRadius: '8px', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text)', margin: 0 }}>Tenant Preferences</h3>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Preferred Location</label>
+              <input id="register-location" name="preferredLocation" value={form.preferredLocation} onChange={handleChange} required style={inputStyle} placeholder="e.g. Mumbai" />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Min Budget</label>
+                <input id="register-min" type="number" name="budgetMin" value={form.budgetMin} onChange={handleChange} required style={inputStyle} placeholder="0" />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Max Budget</label>
+                <input id="register-max" type="number" name="budgetMax" value={form.budgetMax} onChange={handleChange} required style={inputStyle} placeholder="100000" />
+              </div>
+            </div>
+          </div>
+        )}
 
         <button
           id="register-submit"

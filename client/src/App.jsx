@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import useAuth from './hooks/useAuth';
@@ -23,6 +23,8 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminListings from './pages/admin/AdminListings';
 import AdminStats from './pages/admin/AdminStats';
 import AdminSettings from './pages/admin/AdminSettings';
+import TenantDashboard from './pages/TenantDashboard';
+import OwnerDashboard from './pages/OwnerDashboard';
 
 const AppRoutes = () => {
   const { user, logout } = useAuth();
@@ -84,7 +86,7 @@ const AppRoutes = () => {
           path="/dashboard/tenant"
           element={
             <PrivateRoute allowedRoles={['tenant']}>
-              <div style={{ color: 'var(--color-text-muted)' }}>Tenant Dashboard -- coming soon</div>
+              <TenantDashboard />
             </PrivateRoute>
           }
         />
@@ -92,7 +94,7 @@ const AppRoutes = () => {
           path="/dashboard/owner"
           element={
             <PrivateRoute allowedRoles={['owner']}>
-              <div style={{ color: 'var(--color-text-muted)' }}>Owner Dashboard -- coming soon</div>
+              <OwnerDashboard />
             </PrivateRoute>
           }
         />
@@ -120,6 +122,7 @@ const AppRoutes = () => {
             </PrivateRoute>
           }
         >
+          <Route index element={<Navigate to="stats" replace />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="listings" element={<AdminListings />} />
           <Route path="stats" element={<AdminStats />} />

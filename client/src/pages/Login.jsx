@@ -62,12 +62,12 @@ const Login = () => {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div>
           <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Email</label>
-          <input id="login-email" type="email" name="email" value={form.email} onChange={handleChange} required style={inputStyle} placeholder="you@example.com" />
+          <input id="login-email" type="email" name="email" value={form.email} onChange={handleChange} required style={inputStyle} placeholder="email@domain.com" autoComplete="off" />
         </div>
 
         <div>
           <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>Password</label>
-          <input id="login-password" type="password" name="password" value={form.password} onChange={handleChange} required style={inputStyle} placeholder="Your password" />
+          <input id="login-password" type="password" name="password" value={form.password} onChange={handleChange} required style={inputStyle} placeholder="********" autoComplete="new-password" />
         </div>
 
         <button
