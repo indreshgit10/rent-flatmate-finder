@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import ListingCard from '../components/ListingCard';
 import { getListings } from '../services/listingService';
+import { getProfile } from '../services/profileService';
+import useAuth from '../hooks/useAuth';
 
 const SkeletonCard = () => (
   <div style={{
@@ -35,6 +37,7 @@ const inputStyle = {
 };
 
 const Listings = () => {
+  const { user } = useAuth();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
@@ -42,12 +45,32 @@ const Listings = () => {
 
   const [filters, setFilters] = useState({ location: '', minBudget: '', maxBudget: '' });
   const [applied, setApplied] = useState({});
+  const initFetched = useRef(false);
+
+  // Initialize filters from profile
+  useEffect(() => {
+    if (user?.role === 'tenant' && !initFetched.current) {
+      getProfile().then(({ data }) => {
+        if (data?.data) {
+          const prof = data.data;
+          const initialFilters = {
+            location: prof.preferredLocation || '',
+            minBudget: prof.budgetMin || '',
+            maxBudget: prof.budgetMax || ''
+          };
+          setFilters(initialFilters);
+          setApplied(initialFilters);
+        }
+      }).catch(() => {});
+      initFetched.current = true;
+    }
+  }, [user]);
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
     try {
       const params = { page, limit: 12, ...applied };
-      Object.keys(params).forEach((k) => !params[k] && delete params[k]);
+      Object.keys(params).forEach((k) => (params[k] === '' || params[k] === null || params[k] === undefined) && delete params[k]);
       const { data } = await getListings(params);
       setListings(data.data.listings);
       setTotalCount(data.data.totalCount);
