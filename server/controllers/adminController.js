@@ -42,4 +42,24 @@ const getAllListings = async (req, res, next) => {
   }
 };
 
-module.exports = { getUsers, disableUser, enableUser, getAllListings };
+const hideListing = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await adminService.hideListing(id);
+    sendSuccess(res, 'Listing hidden successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+const unhideListing = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await adminService.unhideListing(id);
+    sendSuccess(res, 'Listing unhidden successfully');
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getUsers, disableUser, enableUser, getAllListings, hideListing, unhideListing };

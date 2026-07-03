@@ -11,5 +11,7 @@ router.get('/users', adminController.getUsers);
 router.patch('/users/:id/disable', adminController.disableUser);
 router.patch('/users/:id/enable', adminController.enableUser);
 router.get('/listings', adminController.getAllListings);
+router.patch('/listings/:id/hide', adminController.hideListing);
+router.patch('/listings/:id/unhide', adminController.unhideListing);
 
 module.exports = router;

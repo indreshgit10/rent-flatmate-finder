@@ -69,4 +69,22 @@ const getAllListings = async (page = 1, limit = 10, filters = {}) => {
   };
 };
 
-module.exports = { getUsers, disableUser, enableUser, getAllListings };
+const hideListing = async (listingId) => {
+  const listing = await Listing.findById(listingId);
+  if (!listing) throw new AppError('Listing not found', 404);
+  
+  listing.isHidden = true;
+  await listing.save();
+  return listing;
+};
+
+const unhideListing = async (listingId) => {
+  const listing = await Listing.findById(listingId);
+  if (!listing) throw new AppError('Listing not found', 404);
+  
+  listing.isHidden = false;
+  await listing.save();
+  return listing;
+};
+
+module.exports = { getUsers, disableUser, enableUser, getAllListings, hideListing, unhideListing };
