@@ -2,11 +2,12 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
+const path = require('path');
 const { clientUrl, nodeEnv } = require('./config/env');
 
 const app = express();
 
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cors({ origin: clientUrl, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -14,6 +15,8 @@ app.use(express.urlencoded({ extended: true }));
 if (nodeEnv === 'development') {
   app.use(morgan('dev'));
 }
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/listings', require('./routes/listingRoutes'));
