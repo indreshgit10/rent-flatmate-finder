@@ -13,5 +13,6 @@ router.patch('/users/:id/enable', adminController.enableUser);
 router.get('/listings', adminController.getAllListings);
 router.patch('/listings/:id/hide', adminController.hideListing);
 router.patch('/listings/:id/unhide', adminController.unhideListing);
+router.get('/stats', adminController.getPlatformStats);
 
 module.exports = router;

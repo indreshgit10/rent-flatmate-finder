@@ -61,4 +61,25 @@ const deleteListing = async (id, ownerId) => {
   await listing.deleteOne();
 };
 
-module.exports = { createListing, getListings, getListingById, updateListing, markAsFilled, deleteListing };
+const getOwnerListings = async (ownerId, query) => {
+  const page = parseInt(query.page) || 1;
+  const limit = parseInt(query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const listings = await Listing.find({ owner: ownerId })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+    
+  const totalCount = await Listing.countDocuments({ owner: ownerId });
+  
+  return {
+    listings,
+    page,
+    totalPages: Math.ceil(totalCount / limit),
+    totalCount
+  };
+};
+
+module.exports = { createListing, getListings, getOwnerListings, getListingById, updateListing, markAsFilled, deleteListing };

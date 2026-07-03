@@ -1,5 +1,7 @@
 const User = require('../models/User');
 const Listing = require('../models/Listing');
+const InterestRequest = require('../models/InterestRequest');
+const Message = require('../models/Message');
 const AppError = require('../utils/AppError');
 
 const getUsers = async (page = 1, limit = 10) => {
@@ -87,4 +89,22 @@ const unhideListing = async (listingId) => {
   return listing;
 };
 
-module.exports = { getUsers, disableUser, enableUser, getAllListings, hideListing, unhideListing };
+const getPlatformStats = async () => {
+  const [totalUsers, totalListings, activeListings, totalInterests, totalMessages] = await Promise.all([
+    User.countDocuments({}),
+    Listing.countDocuments({}),
+    Listing.countDocuments({ isFilled: false, isHidden: false }),
+    InterestRequest.countDocuments({}),
+    Message.countDocuments({})
+  ]);
+
+  return {
+    totalUsers,
+    totalListings,
+    activeListings,
+    totalInterests,
+    totalMessages
+  };
+};
+
+module.exports = { getUsers, disableUser, enableUser, getAllListings, hideListing, unhideListing, getPlatformStats };

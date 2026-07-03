@@ -62,4 +62,13 @@ const unhideListing = async (req, res, next) => {
   }
 };
 
-module.exports = { getUsers, disableUser, enableUser, getAllListings, hideListing, unhideListing };
+const getPlatformStats = async (req, res, next) => {
+  try {
+    const stats = await adminService.getPlatformStats();
+    sendSuccess(res, 'Platform statistics retrieved successfully', stats);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getUsers, disableUser, enableUser, getAllListings, hideListing, unhideListing, getPlatformStats };
