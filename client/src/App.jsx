@@ -18,6 +18,11 @@ import SentInterests from './pages/SentInterests';
 import Chat from './pages/Chat';
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
+import AdminLayout from './layouts/AdminLayout';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminListings from './pages/admin/AdminListings';
+import AdminStats from './pages/admin/AdminStats';
+import AdminSettings from './pages/admin/AdminSettings';
 
 const AppRoutes = () => {
   const { user, logout } = useAuth();
@@ -111,10 +116,15 @@ const AppRoutes = () => {
           path="/dashboard/admin"
           element={
             <PrivateRoute allowedRoles={['admin']}>
-              <div style={{ color: 'var(--color-text-muted)' }}>Admin Dashboard -- coming soon</div>
+              <AdminLayout />
             </PrivateRoute>
           }
-        />
+        >
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="listings" element={<AdminListings />} />
+          <Route path="stats" element={<AdminStats />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
 
         <Route path="*" element={<NotFound />} />
       </Route>
