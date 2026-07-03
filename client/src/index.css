@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
 
 :root {
   /* Common variables */
@@ -33,24 +33,24 @@
 }
 
 [data-theme='dark'] {
-  --color-bg: #0f0f13;
-  --color-surface: #1a1a24;
-  --color-surface-raised: #24243a;
-  --color-border: #2e2e45;
-  --color-text: #f1f1f5;
-  --color-text-muted: #9191a8;
-  --color-overlay: rgba(15, 15, 19, 0.8);
+  --color-bg: #09090b;
+  --color-surface: #18181b;
+  --color-surface-raised: #27272a;
+  --color-border: #3f3f46;
+  --color-text: #fafafa;
+  --color-text-muted: #a1a1aa;
+  --color-overlay: rgba(9, 9, 11, 0.8);
 }
 
-/* Default fallback to dark */
-:root:not([data-theme='light']) {
-  --color-bg: #0f0f13;
-  --color-surface: #1a1a24;
-  --color-surface-raised: #24243a;
-  --color-border: #2e2e45;
-  --color-text: #f1f1f5;
-  --color-text-muted: #9191a8;
-  --color-overlay: rgba(15, 15, 19, 0.8);
+/* Default fallback to light */
+:root:not([data-theme='dark']) {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-overlay: rgba(255, 255, 255, 0.8);
 }
 
 *,
