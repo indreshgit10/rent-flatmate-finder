@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { getListingById, markListingAsFilled, deleteListing } from '../services/listingService';
+import { getScore } from '../services/compatibilityService';
+import { sendInterest } from '../services/interestService';
 
 const ListingDetail = () => {
   const { id } = useParams();
@@ -12,6 +14,9 @@ const ListingDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [score, setScore] = useState(null);
+  const [scoreLoading, setScoreLoading] = useState(false);
+  const [interestSent, setInterestSent] = useState(false);
 
   const fetchListing = useCallback(async () => {
     try {
@@ -25,6 +30,16 @@ const ListingDetail = () => {
   }, [id]);
 
   useEffect(() => { fetchListing(); }, [fetchListing]);
+
+  useEffect(() => {
+    if (user?.role === 'tenant' && listing) {
+      setScoreLoading(true);
+      getScore(id)
+        .then(({ data }) => setScore(data?.data))
+        .catch(() => setScore(null))
+        .finally(() => setScoreLoading(false));
+    }
+  }, [user, listing, id]);
 
   const handleMarkFilled = async () => {
     if (!window.confirm('Are you sure you want to mark this listing as filled? It will no longer appear in search results.')) return;
@@ -51,9 +66,22 @@ const ListingDetail = () => {
     }
   };
 
-  const handleExpressInterest = () => {
-    // Will be implemented in Commit 29
-    alert('Express Interest functionality coming soon!');
+  const handleExpressInterest = async () => {
+    setActionLoading(true);
+    try {
+      await sendInterest(id);
+      setInterestSent(true);
+      alert('Interest request sent successfully!');
+    } catch (err) {
+      if (err.response?.status === 409) {
+        setInterestSent(true);
+        alert('You have already expressed interest in this listing.');
+      } else {
+        alert(err.response?.data?.message || 'Failed to send interest request');
+      }
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   if (loading) return <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading listing details...</div>;
@@ -99,7 +127,7 @@ const ListingDetail = () => {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
+      <div className="listing-detail-layout" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>About this listing</h2>
           <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.7 }}>
@@ -114,7 +142,23 @@ const ListingDetail = () => {
             <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
               {isTenant ? "Checking your compatibility based on your tenant profile..." : "Scores are visible to prospective tenants based on their preferences."}
             </p>
-            {/* Will be populated in Commit 30 */}
+            {isTenant && (
+              <div style={{ marginTop: '1rem' }}>
+                {scoreLoading ? (
+                  <div style={{ padding: '1rem', background: 'var(--color-surface)', borderRadius: '8px', textAlign: 'center', color: 'var(--color-text-muted)' }}>Calculating score...</div>
+                ) : score ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <div style={{ fontSize: '2rem', fontWeight: 700, color: score.score >= 75 ? '#4ade80' : score.score >= 50 ? '#fbbf24' : '#f87171' }}>
+                      {score.score}% Match
+                    </div>
+                    {score.explanation && <p style={{ color: 'var(--color-text)', fontSize: '0.95rem', lineHeight: 1.5 }}>{score.explanation}</p>}
+                    <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Source: {score.source}</span>
+                  </div>
+                ) : (
+                  <div style={{ padding: '1rem', background: 'var(--color-surface)', borderRadius: '8px', textAlign: 'center', color: 'var(--color-text-muted)' }}>Score pending or unavailable</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -151,11 +195,12 @@ const ListingDetail = () => {
             {isTenant && !listing.isFilled && (
               <button 
                 onClick={handleExpressInterest}
-                style={{ width: '100%', padding: '0.85rem', background: 'var(--color-primary)', color: '#ffffff', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 600, transition: 'background-color 0.2s' }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-primary)')}
+                disabled={actionLoading || interestSent}
+                style={{ width: '100%', padding: '0.85rem', background: interestSent ? 'var(--color-surface-raised)' : 'var(--color-primary)', color: interestSent ? 'var(--color-text-muted)' : '#ffffff', border: interestSent ? '1px solid var(--color-border)' : 'none', borderRadius: 'var(--radius-md)', cursor: (actionLoading || interestSent) ? 'not-allowed' : 'pointer', fontWeight: 600, transition: 'background-color 0.2s' }}
+                onMouseEnter={(e) => !(actionLoading || interestSent) && (e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)')}
+                onMouseLeave={(e) => !(actionLoading || interestSent) && (e.currentTarget.style.backgroundColor = 'var(--color-primary)')}
               >
-                Express Interest
+                {interestSent ? 'Interest Sent' : 'Express Interest'}
               </button>
             )}
 
