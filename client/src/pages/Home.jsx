@@ -69,31 +69,6 @@ const Home = () => {
           Get Started
         </a>
       </div>
-
-      <div style={{
-        marginTop: '4rem',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '2rem',
-        width: '100%',
-      }}>
-        {[
-          { label: 'Active Users', value: '10k+' },
-          { label: 'Listings Added', value: '5,000+' },
-          { label: 'Successful Matches', value: '98%' },
-        ].map((stat, i) => (
-          <div key={i} style={{
-            background: 'var(--color-surface)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-lg)',
-            padding: '2rem',
-            boxShadow: 'var(--shadow-md)',
-          }}>
-            <h3 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--color-primary)', marginBottom: '0.5rem' }}>{stat.value}</h3>
-            <p style={{ color: 'var(--color-text-muted)', fontWeight: 500 }}>{stat.label}</p>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };

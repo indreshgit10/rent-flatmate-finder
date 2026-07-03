@@ -26,18 +26,19 @@ const TenantProfile = () => {
     fetchProfile();
   }, []);
 
-  if (loading) return <div className="p-8 text-center text-gray-500">Loading profile...</div>;
-  if (error) return <div className="p-8 text-center text-red-500">{error}</div>;
+  if (loading) return <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading profile...</div>;
+  if (error) return <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--color-danger)' }}>{error}</div>;
 
   if (!profile) {
     return (
-      <div className="max-w-2xl mx-auto p-4 mt-8 text-center bg-white rounded-lg shadow" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text)' }}>
-        <h2 className="text-2xl font-bold mb-4">No Profile Yet</h2>
-        <p className="text-gray-500 mb-6">Create a profile to get AI-powered compatibility scores and find the perfect flatmate.</p>
+      <div style={{ maxWidth: '600px', margin: '4rem auto', padding: '2rem', textAlign: 'center', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-md)', border: '1px solid var(--color-border)' }}>
+        <h2 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--color-text)' }}>No Profile Yet</h2>
+        <p style={{ color: 'var(--color-text-muted)', marginBottom: '2rem', lineHeight: 1.6 }}>Create a profile to get AI-powered compatibility scores and find the perfect flatmate.</p>
         <button
           onClick={() => navigate('/profile/edit')}
-          className="px-6 py-2 rounded text-white font-medium transition"
-          style={{ backgroundColor: 'var(--color-primary)' }}
+          style={{ padding: '0.75rem 1.5rem', background: 'var(--color-primary)', color: '#ffffff', borderRadius: 'var(--radius-md)', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'background-color 0.2s' }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-primary)')}
         >
           Create Profile
         </button>
@@ -46,32 +47,33 @@ const TenantProfile = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4 mt-8">
-      <div className="bg-white p-6 rounded-lg shadow" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text)' }}>
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">My Profile</h1>
+    <div style={{ maxWidth: '700px', margin: '3rem auto' }}>
+      <div style={{ background: 'var(--color-surface)', padding: '2.5rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-md)', border: '1px solid var(--color-border)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-text)' }}>My Profile</h1>
           <button
             onClick={() => navigate('/profile/edit')}
-            className="px-4 py-2 border rounded hover:bg-gray-50 transition"
-            style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
+            style={{ padding: '0.6rem 1.2rem', background: 'transparent', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontWeight: 600, transition: 'background-color 0.2s' }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-surface-raised)')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
           >
             Edit Profile
           </button>
         </div>
         
-        <div className="space-y-4">
-          <div>
-            <span className="text-sm block" style={{ color: 'var(--color-text-muted)' }}>Preferred Location</span>
-            <span className="text-lg font-medium">{profile.preferredLocation}</span>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
+          <div style={{ padding: '1.5rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+            <span style={{ display: 'block', fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Preferred Location</span>
+            <span style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-text)' }}>{profile.preferredLocation}</span>
           </div>
-          <div>
-            <span className="text-sm block" style={{ color: 'var(--color-text-muted)' }}>Budget Range</span>
-            <span className="text-lg font-medium">${profile.budgetMin} - ${profile.budgetMax} /mo</span>
+          <div style={{ padding: '1.5rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+            <span style={{ display: 'block', fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Budget Range</span>
+            <span style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-text)' }}>₹{profile.budgetMin.toLocaleString()} - ₹{profile.budgetMax.toLocaleString()} /mo</span>
           </div>
-          <div>
-            <span className="text-sm block" style={{ color: 'var(--color-text-muted)' }}>Move-in Date</span>
-            <span className="text-lg font-medium">
-              {new Date(profile.moveInDate).toLocaleDateString()}
+          <div style={{ padding: '1.5rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+            <span style={{ display: 'block', fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Move-in Date</span>
+            <span style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-text)' }}>
+              {new Date(profile.moveInDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
             </span>
           </div>
         </div>

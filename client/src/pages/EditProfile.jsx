@@ -72,34 +72,37 @@ const EditProfile = () => {
     }
   };
 
-  if (initialLoading) return <div className="p-8 text-center text-gray-500">Loading...</div>;
+  if (initialLoading) return <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading...</div>;
 
   return (
-    <div className="max-w-xl mx-auto p-4 mt-8">
-      <div className="bg-white p-6 rounded-lg shadow" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text)' }}>
-        <h1 className="text-2xl font-bold mb-6">
+    <div style={{ maxWidth: '600px', margin: '3rem auto' }}>
+      <div style={{ background: 'var(--color-surface)', padding: '2.5rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-md)', border: '1px solid var(--color-border)' }}>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '2rem', color: 'var(--color-text)' }}>
           {isExisting ? 'Edit Profile' : 'Create Profile'}
         </h1>
         
-        {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">{error}</div>}
+        {error && (
+          <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--color-danger)', border: '1px solid var(--color-danger)', padding: '0.75rem', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
-            <label className="block text-sm font-medium mb-1">Preferred Location</label>
+            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>Preferred Location</label>
             <input
               type="text"
               name="preferredLocation"
               value={formData.preferredLocation}
               onChange={handleChange}
               required
-              className="w-full p-2 border rounded bg-transparent"
-              style={{ borderColor: 'var(--color-border)' }}
+              style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Min Budget ($)</label>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>Min Budget (₹)</label>
               <input
                 type="number"
                 name="budgetMin"
@@ -107,12 +110,11 @@ const EditProfile = () => {
                 onChange={handleChange}
                 required
                 min="0"
-                className="w-full p-2 border rounded bg-transparent"
-                style={{ borderColor: 'var(--color-border)' }}
+                style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Max Budget ($)</label>
+            <div style={{ flex: 1 }}>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>Max Budget (₹)</label>
               <input
                 type="number"
                 name="budgetMax"
@@ -120,30 +122,41 @@ const EditProfile = () => {
                 onChange={handleChange}
                 required
                 min="0"
-                className="w-full p-2 border rounded bg-transparent"
-                style={{ borderColor: 'var(--color-border)' }}
+                style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Move-in Date</label>
+            <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>Move-in Date</label>
             <input
               type="date"
               name="moveInDate"
               value={formData.moveInDate}
               onChange={handleChange}
               required
-              className="w-full p-2 border rounded bg-transparent"
-              style={{ borderColor: 'var(--color-border)' }}
+              style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 rounded text-white font-medium transition disabled:opacity-50 mt-4"
-            style={{ backgroundColor: 'var(--color-primary)' }}
+            style={{
+              marginTop: '1rem',
+              width: '100%',
+              padding: '0.85rem',
+              background: loading ? 'var(--color-surface-raised)' : 'var(--color-primary)',
+              color: loading ? 'var(--color-text-muted)' : '#ffffff',
+              border: 'none',
+              borderRadius: 'var(--radius-md)',
+              fontWeight: 600,
+              fontSize: '1rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.2s',
+            }}
+            onMouseEnter={(e) => !loading && (e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)')}
+            onMouseLeave={(e) => !loading && (e.currentTarget.style.backgroundColor = 'var(--color-primary)')}
           >
             {loading ? 'Saving...' : 'Save Profile'}
           </button>
