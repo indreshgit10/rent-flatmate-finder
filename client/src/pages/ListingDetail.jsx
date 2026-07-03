@@ -1,168 +1,169 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
-import { getListingById, markListingAsFilled } from '../services/listingService';
-import { sendInterest, getSentInterests } from '../services/interestService';
+import { getListingById, markListingAsFilled, deleteListing } from '../services/listingService';
 
 const ListingDetail = () => {
   const { id } = useParams();
-  const { user } = useAuth();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [fillLoading, setFillLoading] = useState(false);
-  
-  const [interestRequest, setInterestRequest] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchListing = async () => {
-      try {
-        const { data } = await getListingById(id);
-        setListing(data.data);
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load listing');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchListing();
+  const fetchListing = useCallback(async () => {
+    try {
+      const { data } = await getListingById(id);
+      setListing(data.data);
+    } catch (err) {
+      setError('Failed to load listing. It may have been removed.');
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
 
-  useEffect(() => {
-    if (user?.role === 'tenant') {
-      const fetchInterest = async () => {
-        try {
-          const { data } = await getSentInterests({ limit: 100 });
-          const existing = data.data.interests.find(i => i.listing._id === id || i.listing === id);
-          if (existing) {
-            setInterestRequest(existing);
-          }
-        } catch (err) {
-          console.error('Failed to fetch interests', err);
-        }
-      };
-      fetchInterest();
-    }
-  }, [id, user]);
+  useEffect(() => { fetchListing(); }, [fetchListing]);
 
-  const handleFill = async () => {
+  const handleMarkFilled = async () => {
+    if (!window.confirm('Are you sure you want to mark this listing as filled? It will no longer appear in search results.')) return;
+    setActionLoading(true);
     try {
-      setFillLoading(true);
       await markListingAsFilled(id);
-      setListing((prev) => ({ ...prev, isFilled: true }));
+      fetchListing();
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to mark as filled');
-    } finally {
-      setFillLoading(false);
-    }
-  };
-
-  const handleExpressInterest = async () => {
-    try {
-      setActionLoading(true);
-      const { data } = await sendInterest(id);
-      setInterestRequest(data.data);
-      alert('Interest sent successfully!');
-    } catch (err) {
-      alert(err.response?.data?.message || 'Failed to send interest');
     } finally {
       setActionLoading(false);
     }
   };
 
-  if (loading) return <div className="p-8 text-center" style={{ color: 'var(--color-text-muted)' }}>Loading listing details...</div>;
-  if (error) return <div className="p-8 text-center text-red-500">{error}</div>;
-  if (!listing) return <div className="p-8 text-center">Listing not found.</div>;
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this listing permanently?')) return;
+    setActionLoading(true);
+    try {
+      await deleteListing(id);
+      navigate('/dashboard/owner');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete listing');
+      setActionLoading(false);
+    }
+  };
 
-  const currentUserId = user?._id || user?.id;
-  const listingOwnerId = listing.owner?._id || listing.owner;
-  const isOwner = user?.role === 'owner' && currentUserId === listingOwnerId;
+  const handleExpressInterest = () => {
+    // Will be implemented in Commit 29
+    alert('Express Interest functionality coming soon!');
+  };
+
+  if (loading) return <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>Loading listing details...</div>;
+  if (error) return <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--color-danger)' }}>{error}</div>;
+  if (!listing) return null;
+
+  const isOwner = user?.role === 'owner' && listing.owner?._id === user.id;
   const isTenant = user?.role === 'tenant';
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6">
-      <div className="bg-white p-6 rounded-lg shadow space-y-6" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text)' }}>
-        <h1 className="text-3xl font-bold">{listing.location}</h1>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4" style={{ color: 'var(--color-text-muted)' }}>
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wider">Rent</p>
-            <p className="text-lg">${listing.rent}/mo</p>
-          </div>
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wider">Room Type</p>
-            <p className="text-lg capitalize">{listing.roomType}</p>
-          </div>
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wider">Furnishing</p>
-            <p className="text-lg capitalize">{listing.furnishing}</p>
-          </div>
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wider">Available</p>
-            <p className="text-lg">{new Date(listing.availableFrom).toLocaleDateString()}</p>
+    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>{listing.location}</h1>
+          <div style={{ display: 'flex', gap: '1rem', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
+            <span>Available from: {new Date(listing.availableFrom).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            <span>•</span>
+            <span style={{ textTransform: 'capitalize' }}>{listing.roomType} Room</span>
+            <span>•</span>
+            <span style={{ textTransform: 'capitalize' }}>{listing.furnishing}</span>
           </div>
         </div>
-
-        {listing.photos && listing.photos.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {listing.photos.map((photo, i) => (
-              <img key={i} src={photo} alt={`Room ${i + 1}`} className="w-full h-48 object-cover rounded-lg" />
-            ))}
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--color-primary)' }}>
+            {listing.rent.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}
+            <span style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--color-text-muted)' }}>/mo</span>
           </div>
-        )}
-
-        <div className="p-6 rounded-lg border" style={{ backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)' }}>
-          <h2 className="text-xl font-semibold mb-2">Compatibility Score</h2>
-          <p style={{ color: 'var(--color-text-muted)' }}>Score pending...</p>
-        </div>
-
-        <div className="flex gap-4 pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
-          {isTenant && !interestRequest && (
-            <button 
-              onClick={handleExpressInterest}
-              disabled={actionLoading || listing.isFilled}
-              className="px-6 py-2 rounded-lg font-medium transition disabled:opacity-50" 
-              style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
-            >
-              {actionLoading ? 'Sending...' : 'Express Interest'}
-            </button>
-          )}
-
-          {isTenant && interestRequest && (
-            <div className="flex items-center gap-4">
-              <span className="px-4 py-2 rounded-lg border font-medium capitalize" style={{ backgroundColor: 'var(--color-surface-raised)', borderColor: 'var(--color-border)', color: 'var(--color-text)' }}>
-                Status: {interestRequest.status}
-              </span>
-              {interestRequest.status === 'accepted' && (
-                <button
-                  onClick={() => navigate(`/chat/${interestRequest._id}`)}
-                  className="px-6 py-2 rounded-lg font-medium transition"
-                  style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
-                >
-                  Go to Chat
-                </button>
-              )}
-            </div>
-          )}
-          
-          {isOwner && !listing.isFilled && (
-            <button
-              onClick={handleFill}
-              disabled={fillLoading}
-              className="px-6 py-2 rounded-lg font-medium transition disabled:opacity-50"
-              style={{ backgroundColor: '#10b981', color: 'white' }}
-            >
-              {fillLoading ? 'Marking...' : 'Mark as Filled'}
-            </button>
-          )}
-
           {listing.isFilled && (
-            <span className="px-6 py-2 rounded-lg font-medium" style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text-muted)' }}>
-              Filled
+            <span style={{ display: 'inline-block', marginTop: '0.5rem', padding: '0.2rem 0.6rem', background: 'var(--color-surface-raised)', color: 'var(--color-text-muted)', borderRadius: '4px', fontSize: '0.85rem' }}>
+              Marked as Filled
             </span>
           )}
+        </div>
+      </div>
+
+      {listing.photos && listing.photos.length > 0 ? (
+        <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '2rem' }}>
+          {listing.photos.map((photo, i) => (
+            <img key={i} src={photo} alt={`Room view ${i + 1}`} style={{ height: '300px', borderRadius: '10px', objectFit: 'cover' }} />
+          ))}
+        </div>
+      ) : (
+        <div style={{ height: '300px', background: 'var(--color-surface-raised)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-muted)', marginBottom: '2rem' }}>
+          No photos available
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
+        <div>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>About this listing</h2>
+          <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.7 }}>
+            Beautiful {listing.roomType} room available in {listing.location}. 
+            The property is offered {listing.furnishing}.
+            Reach out to express interest and discuss further details!
+          </p>
+          
+          {/* Compatibility Score Section placeholder */}
+          <div style={{ marginTop: '2.5rem', padding: '1.5rem', background: 'var(--color-surface-raised)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Compatibility Score</h3>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
+              {isTenant ? "Checking your compatibility based on your tenant profile..." : "Scores are visible to prospective tenants based on their preferences."}
+            </p>
+            {/* Will be populated in Commit 30 */}
+          </div>
+        </div>
+
+        <div>
+          <div style={{ background: 'var(--color-surface)', padding: '1.5rem', borderRadius: '10px', border: '1px solid var(--color-border)', position: 'sticky', top: '100px' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1rem' }}>Owner Info</h3>
+            <p style={{ color: 'var(--color-text)', marginBottom: '1.5rem' }}>{listing.owner?.name || 'Unknown'}</p>
+
+            {isOwner && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {!listing.isFilled && (
+                  <button 
+                    onClick={handleMarkFilled} 
+                    disabled={actionLoading}
+                    style={{ padding: '0.75rem', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '6px', cursor: actionLoading ? 'not-allowed' : 'pointer', fontWeight: 600 }}
+                  >
+                    Mark as Filled
+                  </button>
+                )}
+                <button 
+                  onClick={handleDelete}
+                  disabled={actionLoading}
+                  style={{ padding: '0.75rem', background: 'transparent', color: 'var(--color-danger)', border: '1px solid var(--color-danger)', borderRadius: '6px', cursor: actionLoading ? 'not-allowed' : 'pointer', fontWeight: 600 }}
+                >
+                  Delete Listing
+                </button>
+              </div>
+            )}
+
+            {isTenant && !listing.isFilled && (
+              <button 
+                onClick={handleExpressInterest}
+                style={{ width: '100%', padding: '0.75rem', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Express Interest
+              </button>
+            )}
+
+            {!user && (
+              <button 
+                onClick={() => navigate('/login')}
+                style={{ width: '100%', padding: '0.75rem', background: 'var(--color-surface-raised)', color: 'var(--color-text)', border: '1px solid var(--color-border)', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Log in to contact owner
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
