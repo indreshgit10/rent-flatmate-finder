@@ -2,6 +2,19 @@
 
 Finding a flatmate is harder than it looks. Price and location get you 80% of the way there, but the remaining 20% — lifestyle, habits, expectations — is where things fall apart. This project tries to close that gap using an AI-powered compatibility engine that matches tenants to listings based on their actual preferences, not just their budget.
 
+## Demo Credentials
+
+These accounts are pre-seeded on the hosted application for evaluation purposes.
+
+| Role | Email | Password |
+|---|---|---|
+| **Admin** | admin@rentmatch.com | SuperSecurePassword123! |
+| **Owner** | owner@demo.com | Demo@1234 |
+| **Tenant** | tenant@demo.com | Demo@1234 |
+
+> The Admin account has access to the full admin dashboard (user management, listing moderation, platform stats).
+
+
 ## What it does
 
 There are three types of users on the platform:
