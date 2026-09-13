@@ -1,78 +1,130 @@
-const Listing = require('../models/Listing');
+const { getPool } = require('../config/db');
 const AppError = require('../utils/AppError');
 
 const createListing = async (ownerId, data) => {
-  const listing = await Listing.create({ owner: ownerId, ...data });
-  return listing;
+  const pool = getPool();
+  const { title, description, location, rent } = data;
+  
+  const [result] = await pool.query(
+    'INSERT INTO Listings (owner_id, title, description, location, monthly_rent) VALUES (?, ?, ?, ?, ?)',
+    [ownerId, title, description, location, rent]
+  );
+  
+  const [newListing] = await pool.query('SELECT * FROM Listings WHERE id = ?', [result.insertId]);
+  return newListing[0];
 };
 
 const getListings = async ({ location, minBudget, maxBudget, page = 1, limit = 10 }) => {
-  const filter = { isFilled: false, isHidden: false };
+  const pool = getPool();
+  let query = 'SELECT * FROM Listings WHERE is_filled = FALSE AND is_hidden = FALSE';
+  const queryParams = [];
 
-  if (location) filter.location = { $regex: location, $options: 'i' };
-  if (minBudget) filter.rent = { ...filter.rent, $gte: Number(minBudget) };
-  if (maxBudget) filter.rent = { ...filter.rent, $lte: Number(maxBudget) };
+  if (location) {
+    query += ' AND location LIKE ?';
+    queryParams.push(`%${location}%`);
+  }
+  if (minBudget) {
+    query += ' AND monthly_rent >= ?';
+    queryParams.push(Number(minBudget));
+  }
+  if (maxBudget) {
+    query += ' AND monthly_rent <= ?';
+    queryParams.push(Number(maxBudget));
+  }
 
-  const skip = (page - 1) * limit;
-  const [listings, totalCount] = await Promise.all([
-    Listing.find(filter).sort({ createdAt: -1 }).skip(skip).limit(Number(limit)).lean(),
-    Listing.countDocuments(filter),
-  ]);
+  // Count total for pagination
+  const countQuery = query.replace('SELECT *', 'SELECT COUNT(*) as totalCount');
+  const [countResult] = await pool.query(countQuery, queryParams);
+  const totalCount = countResult[0].totalCount;
+
+  // Add pagination
+  query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+  const offset = (page - 1) * limit;
+  queryParams.push(Number(limit), Number(offset));
+
+  const [listings] = await pool.query(query, queryParams);
 
   return { listings, totalCount, page: Number(page), limit: Number(limit) };
 };
 
 const getListingById = async (id) => {
-  const listing = await Listing.findById(id).populate('owner', 'name email');
-  if (!listing) throw new AppError('Listing not found', 404);
+  const pool = getPool();
+  const [listings] = await pool.query(
+    `SELECT l.*, u.name as owner_name, u.email as owner_email 
+     FROM Listings l 
+     JOIN Users u ON l.owner_id = u.id 
+     WHERE l.id = ?`,
+    [id]
+  );
+  
+  if (listings.length === 0) throw new AppError('Listing not found', 404);
+  
+  const listing = listings[0];
+  // Reformat to match old mongoose nested structure slightly
+  listing.owner = { id: listing.owner_id, name: listing.owner_name, email: listing.owner_email };
+  delete listing.owner_name;
+  delete listing.owner_email;
+  
   return listing;
 };
 
 const updateListing = async (id, ownerId, data) => {
-  const listing = await Listing.findById(id);
-  if (!listing) throw new AppError('Listing not found', 404);
-  if (listing.owner.toString() !== ownerId) throw new AppError('Forbidden', 403);
+  const pool = getPool();
+  const { title, description, location, rent } = data;
+  
+  const [existing] = await pool.query('SELECT owner_id FROM Listings WHERE id = ?', [id]);
+  if (existing.length === 0) throw new AppError('Listing not found', 404);
+  if (existing[0].owner_id.toString() !== ownerId.toString()) throw new AppError('Forbidden', 403);
 
-  Object.assign(listing, data);
-  await listing.save();
-  return listing;
+  await pool.query(
+    'UPDATE Listings SET title = ?, description = ?, location = ?, monthly_rent = ? WHERE id = ?',
+    [title, description, location, rent, id]
+  );
+  
+  const [updated] = await pool.query('SELECT * FROM Listings WHERE id = ?', [id]);
+  return updated[0];
 };
 
 const markAsFilled = async (id, ownerId) => {
-  const listing = await Listing.findById(id);
-  if (!listing) throw new AppError('Listing not found', 404);
-  if (listing.owner.toString() !== ownerId) throw new AppError('Forbidden', 403);
-  if (listing.isFilled) throw new AppError('Listing is already marked as filled', 400);
+  const pool = getPool();
+  
+  const [existing] = await pool.query('SELECT owner_id, is_filled FROM Listings WHERE id = ?', [id]);
+  if (existing.length === 0) throw new AppError('Listing not found', 404);
+  if (existing[0].owner_id.toString() !== ownerId.toString()) throw new AppError('Forbidden', 403);
+  if (existing[0].is_filled) throw new AppError('Listing is already marked as filled', 400);
 
-  listing.isFilled = true;
-  await listing.save();
+  await pool.query('UPDATE Listings SET is_filled = TRUE WHERE id = ?', [id]);
+  
+  // Note: CompatibilityScores need to be handled. Assuming a CompatibilityScores table exists or will exist
+  // await pool.query('DELETE FROM CompatibilityScores WHERE listing_id = ?', [id]);
 
-  const CompatibilityScore = require('../models/CompatibilityScore');
-  await CompatibilityScore.deleteMany({ listing: id });
-
-  return listing;
+  const [updated] = await pool.query('SELECT * FROM Listings WHERE id = ?', [id]);
+  return updated[0];
 };
 
 const deleteListing = async (id, ownerId) => {
-  const listing = await Listing.findById(id);
-  if (!listing) throw new AppError('Listing not found', 404);
-  if (listing.owner.toString() !== ownerId) throw new AppError('Forbidden', 403);
+  const pool = getPool();
+  
+  const [existing] = await pool.query('SELECT owner_id FROM Listings WHERE id = ?', [id]);
+  if (existing.length === 0) throw new AppError('Listing not found', 404);
+  if (existing[0].owner_id.toString() !== ownerId.toString()) throw new AppError('Forbidden', 403);
 
-  await listing.deleteOne();
+  await pool.query('DELETE FROM Listings WHERE id = ?', [id]);
 };
 
-const getOwnerListings = async (ownerId, query) => {
-  const page = parseInt(query.page) || 1;
-  const limit = parseInt(query.limit) || 10;
+const getOwnerListings = async (ownerId, queryParamsObj) => {
+  const pool = getPool();
+  const page = parseInt(queryParamsObj.page) || 1;
+  const limit = parseInt(queryParamsObj.limit) || 10;
   const skip = (page - 1) * limit;
 
-  const listings = await Listing.find({ owner: ownerId })
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .lean();
+  const [listings] = await pool.query(
+    'SELECT * FROM Listings WHERE owner_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+    [ownerId, limit, skip]
+  );
     
-  const totalCount = await Listing.countDocuments({ owner: ownerId });
+  const [countResult] = await pool.query('SELECT COUNT(*) as totalCount FROM Listings WHERE owner_id = ?', [ownerId]);
+  const totalCount = countResult[0].totalCount;
   
   return {
     listings,

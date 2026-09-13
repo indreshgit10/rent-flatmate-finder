@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const TenantProfile = require('../models/TenantProfile');
+const bcrypt = require('bcryptjs');
+const { getPool } = require('../config/db');
 const AppError = require('../utils/AppError');
 const { jwtSecret, jwtExpiresIn } = require('../config/env');
 
@@ -9,8 +9,11 @@ const generateToken = (userId, role) => {
 };
 
 const registerUser = async ({ name, email, password, role, preferredLocation, budgetMin, budgetMax }) => {
-  const existing = await User.findOne({ email });
-  if (existing) throw new AppError('Email already registered', 400);
+  const pool = getPool();
+  
+  // Check if user exists
+  const [existing] = await pool.query('SELECT * FROM Users WHERE email = ?', [email]);
+  if (existing.length > 0) throw new AppError('Email already registered', 400);
 
   if (role === 'tenant') {
     const min = Number(budgetMin) || 0;
@@ -20,34 +23,57 @@ const registerUser = async ({ name, email, password, role, preferredLocation, bu
     }
   }
 
-  const user = await User.create({ name, email, password, role });
-  
-  if (role === 'tenant') {
-    // moveInDate isn't in the filter but required by TenantProfile, so use a default if not provided
-    await TenantProfile.create({
-      tenant: user._id,
-      preferredLocation: preferredLocation || '',
-      budgetMin: Number(budgetMin) || 0,
-      budgetMax: Number(budgetMax) || 100000,
-      moveInDate: new Date()
-    });
-  }
-  const token = generateToken(user._id, user.role);
+  // Hash password manually since we removed Mongoose pre-save hook
+  const salt = await bcrypt.genSalt(10);
+  const passwordHash = await bcrypt.hash(password, salt);
 
-  return { token, user: { id: user._id, name: user.name, email: user.email, role: user.role } };
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // Insert User
+    const [userResult] = await connection.query(
+      'INSERT INTO Users (name, email, password_hash, role) VALUES (?, ?, ?, ?)',
+      [name, email, passwordHash, role]
+    );
+    const userId = userResult.insertId;
+
+    if (role === 'tenant') {
+      const min = Number(budgetMin) || 0;
+      const max = Number(budgetMax) || 100000;
+      const moveInDate = new Date().toISOString().split('T')[0]; // Default to today
+      
+      // Insert TenantProfile
+      await connection.query(
+        'INSERT INTO TenantProfiles (user_id, preferred_location, budget_min, budget_max, move_in_date) VALUES (?, ?, ?, ?, ?)',
+        [userId, preferredLocation || '', min, max, moveInDate]
+      );
+    }
+    
+    await connection.commit();
+    const token = generateToken(userId, role);
+    return { token, user: { id: userId, name, email, role } };
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
 };
 
 const loginUser = async ({ email, password }) => {
-  const user = await User.findOne({ email }).select('+password');
+  const pool = getPool();
+  const [users] = await pool.query('SELECT * FROM Users WHERE email = ?', [email]);
+  const user = users[0];
+  
   if (!user) throw new AppError('Invalid email or password', 401);
-  if (user.isDisabled) throw new AppError('Account has been disabled', 401);
 
-  const isMatch = await user.comparePassword(password);
+  const isMatch = await bcrypt.compare(password, user.password_hash);
   if (!isMatch) throw new AppError('Invalid email or password', 401);
 
-  const token = generateToken(user._id, user.role);
+  const token = generateToken(user.id, user.role);
 
-  return { token, user: { id: user._id, name: user.name, email: user.email, role: user.role } };
+  return { token, user: { id: user.id, name: user.name, email: user.email, role: user.role } };
 };
 
 module.exports = { registerUser, loginUser };
