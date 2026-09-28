@@ -9,11 +9,17 @@ const EditProfile = () => {
   const [error, setError] = useState('');
   const [isExisting, setIsExisting] = useState(false);
   
-  const [formData, setFormData] = useState({
     preferredLocation: '',
     budgetMin: '',
     budgetMax: '',
-    moveInDate: ''
+    moveInDate: '',
+    sleepSchedule: '',
+    smokingHabit: '',
+    drinkingHabit: '',
+    petPolicy: '',
+    cleanliness: '',
+    roomType: '',
+    furnishing: ''
   });
 
   useEffect(() => {
@@ -24,10 +30,16 @@ const EditProfile = () => {
           setIsExisting(true);
           const p = data.data;
           setFormData({
-            preferredLocation: p.preferredLocation,
-            budgetMin: p.budgetMin,
-            budgetMax: p.budgetMax,
-            moveInDate: p.moveInDate ? new Date(p.moveInDate).toISOString().split('T')[0] : ''
+            budgetMin: p.budgetMin || p.budget_min || '',
+            budgetMax: p.budgetMax || p.budget_max || '',
+            moveInDate: p.moveInDate || p.move_in_date ? new Date(p.moveInDate || p.move_in_date).toISOString().split('T')[0] : '',
+            sleepSchedule: p.sleepSchedule || p.sleep_schedule || '',
+            smokingHabit: p.smokingHabit || p.smoking_habit || '',
+            drinkingHabit: p.drinkingHabit || p.drinking_habit || '',
+            petPolicy: p.petPolicy || p.pet_policy || '',
+            cleanliness: p.cleanliness || '',
+            roomType: p.roomType || p.room_type || '',
+            furnishing: p.furnishing || ''
           });
         }
       } catch (err) {
@@ -137,6 +149,72 @@ const EditProfile = () => {
               required
               style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}
             />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>Sleep Schedule</label>
+              <select name="sleepSchedule" value={formData.sleepSchedule} onChange={handleChange} style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}>
+                <option value="">Select...</option>
+                <option value="Early Bird">Early Bird</option>
+                <option value="Night Owl">Night Owl</option>
+                <option value="Flexible">Flexible</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>Smoking Habit</label>
+              <select name="smokingHabit" value={formData.smokingHabit} onChange={handleChange} style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}>
+                <option value="">Select...</option>
+                <option value="Non-smoker">Non-smoker</option>
+                <option value="Smoker">Smoker</option>
+                <option value="Outside Only">Outside Only</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>Drinking Habit</label>
+              <select name="drinkingHabit" value={formData.drinkingHabit} onChange={handleChange} style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}>
+                <option value="">Select...</option>
+                <option value="Non-drinker">Non-drinker</option>
+                <option value="Occasional">Occasional</option>
+                <option value="Regular">Regular</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>Pet Policy</label>
+              <select name="petPolicy" value={formData.petPolicy} onChange={handleChange} style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}>
+                <option value="">Select...</option>
+                <option value="No Pets">No Pets</option>
+                <option value="Cats Only">Cats Only</option>
+                <option value="Dogs Only">Dogs Only</option>
+                <option value="Any Pets">Any Pets</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>Cleanliness</label>
+              <select name="cleanliness" value={formData.cleanliness} onChange={handleChange} style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}>
+                <option value="">Select...</option>
+                <option value="Strict">Strict</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Relaxed">Relaxed</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>Room Type</label>
+              <select name="roomType" value={formData.roomType} onChange={handleChange} style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}>
+                <option value="">Select...</option>
+                <option value="Private Room">Private Room</option>
+                <option value="Shared Room">Shared Room</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>Furnishing</label>
+              <select name="furnishing" value={formData.furnishing} onChange={handleChange} style={{ width: '100%', padding: '0.75rem 1rem', background: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)' }}>
+                <option value="">Select...</option>
+                <option value="Fully Furnished">Fully Furnished</option>
+                <option value="Semi-furnished">Semi-furnished</option>
+                <option value="Unfurnished">Unfurnished</option>
+              </select>
+            </div>
           </div>
 
           <button

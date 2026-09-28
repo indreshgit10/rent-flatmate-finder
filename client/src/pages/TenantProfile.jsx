@@ -73,8 +73,41 @@ const TenantProfile = () => {
           <div style={{ padding: '1.5rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
             <span style={{ display: 'block', fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Move-in Date</span>
             <span style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-text)' }}>
-              {new Date(profile.moveInDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+              {profile.moveInDate || profile.move_in_date ? new Date(profile.moveInDate || profile.move_in_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A'}
             </span>
+          </div>
+        </div>
+
+        {/* Lifestyle & Preferences */}
+        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--color-text)', marginTop: '3rem', marginBottom: '1.5rem' }}>Lifestyle & Preferences</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1.5rem' }}>
+          <div style={{ padding: '1.25rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+            <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Sleep Schedule</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--color-text)' }}>{profile.sleepSchedule || profile.sleep_schedule || 'Not specified'}</span>
+          </div>
+          <div style={{ padding: '1.25rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+            <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Smoking Habit</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--color-text)' }}>{profile.smokingHabit || profile.smoking_habit || 'Not specified'}</span>
+          </div>
+          <div style={{ padding: '1.25rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+            <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Drinking Habit</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--color-text)' }}>{profile.drinkingHabit || profile.drinking_habit || 'Not specified'}</span>
+          </div>
+          <div style={{ padding: '1.25rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+            <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Pet Policy</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--color-text)' }}>{profile.petPolicy || profile.pet_policy || 'Not specified'}</span>
+          </div>
+          <div style={{ padding: '1.25rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+            <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Cleanliness</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--color-text)' }}>{profile.cleanliness || 'Not specified'}</span>
+          </div>
+          <div style={{ padding: '1.25rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+            <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Room Type</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--color-text)' }}>{profile.roomType || profile.room_type || 'Not specified'}</span>
+          </div>
+          <div style={{ padding: '1.25rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+            <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Furnishing</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--color-text)' }}>{profile.furnishing || 'Not specified'}</span>
           </div>
         </div>
       </div>

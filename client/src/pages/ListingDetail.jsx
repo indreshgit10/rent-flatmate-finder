@@ -131,10 +131,34 @@ const ListingDetail = () => {
         <div>
           <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>About this listing</h2>
           <p style={{ color: 'var(--color-text-muted)', lineHeight: 1.7 }}>
-            Beautiful {listing.roomType} room available in {listing.location}. 
+            Beautiful {listing.roomType || listing.room_type} room available in {listing.location}. 
             The property is offered {listing.furnishing}.
             Reach out to express interest and discuss further details!
           </p>
+          
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginTop: '2rem', marginBottom: '1rem' }}>Lifestyle Preferences & Expectations</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+            <div style={{ padding: '1rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+              <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.2rem' }}>Sleep Schedule</span>
+              <span style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--color-text)' }}>{listing.sleepSchedule || listing.sleep_schedule || 'Any'}</span>
+            </div>
+            <div style={{ padding: '1rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+              <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.2rem' }}>Smoking Policy</span>
+              <span style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--color-text)' }}>{listing.smokingHabit || listing.smoking_habit || 'Any'}</span>
+            </div>
+            <div style={{ padding: '1rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+              <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.2rem' }}>Drinking Policy</span>
+              <span style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--color-text)' }}>{listing.drinkingHabit || listing.drinking_habit || 'Any'}</span>
+            </div>
+            <div style={{ padding: '1rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+              <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.2rem' }}>Pet Policy</span>
+              <span style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--color-text)' }}>{listing.petPolicy || listing.pet_policy || 'Any'}</span>
+            </div>
+            <div style={{ padding: '1rem', background: 'var(--color-surface-raised)', borderRadius: 'var(--radius-md)' }}>
+              <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.2rem' }}>Cleanliness</span>
+              <span style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--color-text)' }}>{listing.cleanliness || 'Any'}</span>
+            </div>
+          </div>
           
           {/* Compatibility Score Section placeholder */}
           <div style={{ marginTop: '2.5rem', padding: '1.5rem', background: 'var(--color-surface-raised)', borderRadius: '10px', border: '1px solid var(--color-border)' }}>

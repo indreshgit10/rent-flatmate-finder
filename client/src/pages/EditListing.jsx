@@ -15,6 +15,11 @@ const EditListing = () => {
     availableFrom: '',
     roomType: 'single',
     furnishing: 'unfurnished',
+    sleepSchedule: '',
+    smokingHabit: '',
+    drinkingHabit: '',
+    petPolicy: '',
+    cleanliness: '',
     photos: []
   });
 
@@ -34,8 +39,13 @@ const EditListing = () => {
           location: listing.location,
           rent: listing.rent,
           availableFrom: formattedDate,
-          roomType: listing.roomType,
-          furnishing: listing.furnishing,
+          roomType: listing.roomType || listing.room_type || 'single',
+          furnishing: listing.furnishing || 'unfurnished',
+          sleepSchedule: listing.sleepSchedule || listing.sleep_schedule || '',
+          smokingHabit: listing.smokingHabit || listing.smoking_habit || '',
+          drinkingHabit: listing.drinkingHabit || listing.drinking_habit || '',
+          petPolicy: listing.petPolicy || listing.pet_policy || '',
+          cleanliness: listing.cleanliness || '',
           photos: listing.photos || []
         });
       } catch (err) {
@@ -78,6 +88,11 @@ const EditListing = () => {
       data.append('availableFrom', formData.availableFrom);
       data.append('roomType', formData.roomType);
       data.append('furnishing', formData.furnishing);
+      data.append('sleepSchedule', formData.sleepSchedule);
+      data.append('smokingHabit', formData.smokingHabit);
+      data.append('drinkingHabit', formData.drinkingHabit);
+      data.append('petPolicy', formData.petPolicy);
+      data.append('cleanliness', formData.cleanliness);
       
       if (photos.length > 0) {
         photos.forEach(photo => {
@@ -167,9 +182,9 @@ const EditListing = () => {
                 onChange={handleChange}
                 style={inputStyle}
               >
-                <option value="single">Single Room</option>
-                <option value="shared">Shared Room</option>
-                <option value="studio">Studio Apartment</option>
+                <option value="Private Room">Private Room</option>
+                <option value="Shared Room">Shared Room</option>
+                <option value="Studio">Studio Apartment</option>
               </select>
             </div>
 
@@ -181,9 +196,60 @@ const EditListing = () => {
                 onChange={handleChange}
                 style={inputStyle}
               >
-                <option value="unfurnished">Unfurnished</option>
-                <option value="semi">Semi-furnished</option>
-                <option value="furnished">Fully Furnished</option>
+                <option value="Fully Furnished">Fully Furnished</option>
+                <option value="Semi-furnished">Semi-furnished</option>
+                <option value="Unfurnished">Unfurnished</option>
+              </select>
+            </div>
+            
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>Preferred Sleep Schedule</label>
+              <select name="sleepSchedule" value={formData.sleepSchedule} onChange={handleChange} style={inputStyle}>
+                <option value="">Any</option>
+                <option value="Early Bird">Early Bird</option>
+                <option value="Night Owl">Night Owl</option>
+                <option value="Flexible">Flexible</option>
+              </select>
+            </div>
+            
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>Smoking Policy</label>
+              <select name="smokingHabit" value={formData.smokingHabit} onChange={handleChange} style={inputStyle}>
+                <option value="">Any</option>
+                <option value="Non-smoker">Non-smoker</option>
+                <option value="Smoker">Smoker</option>
+                <option value="Outside Only">Outside Only</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>Drinking Policy</label>
+              <select name="drinkingHabit" value={formData.drinkingHabit} onChange={handleChange} style={inputStyle}>
+                <option value="">Any</option>
+                <option value="Non-drinker">Non-drinker</option>
+                <option value="Occasional">Occasional</option>
+                <option value="Regular">Regular</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>Pet Policy</label>
+              <select name="petPolicy" value={formData.petPolicy} onChange={handleChange} style={inputStyle}>
+                <option value="">Any</option>
+                <option value="No Pets">No Pets</option>
+                <option value="Cats Only">Cats Only</option>
+                <option value="Dogs Only">Dogs Only</option>
+                <option value="Any Pets">Any Pets</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>Cleanliness Expectation</label>
+              <select name="cleanliness" value={formData.cleanliness} onChange={handleChange} style={inputStyle}>
+                <option value="">Any</option>
+                <option value="Strict">Strict</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Relaxed">Relaxed</option>
               </select>
             </div>
           </div>

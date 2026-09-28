@@ -3,11 +3,11 @@ const AppError = require('../utils/AppError');
 
 const createListing = async (ownerId, data) => {
   const pool = getPool();
-  const { title, description, location, rent } = data;
+  const { title, description, location, rent, roomType, furnishing, sleepSchedule, smokingHabit, drinkingHabit, petPolicy, cleanliness } = data;
   
   const [result] = await pool.query(
-    'INSERT INTO Listings (owner_id, title, description, location, monthly_rent) VALUES (?, ?, ?, ?, ?)',
-    [ownerId, title, description, location, rent]
+    'INSERT INTO Listings (owner_id, title, description, location, monthly_rent, room_type, furnishing, sleep_schedule, smoking_habit, drinking_habit, pet_policy, cleanliness) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    [ownerId, title, description, location, rent, roomType, furnishing, sleepSchedule, smokingHabit, drinkingHabit, petPolicy, cleanliness]
   );
   
   const [newListing] = await pool.query('SELECT * FROM Listings WHERE id = ?', [result.insertId]);
@@ -70,15 +70,15 @@ const getListingById = async (id) => {
 
 const updateListing = async (id, ownerId, data) => {
   const pool = getPool();
-  const { title, description, location, rent } = data;
+  const { title, description, location, rent, roomType, furnishing, sleepSchedule, smokingHabit, drinkingHabit, petPolicy, cleanliness } = data;
   
   const [existing] = await pool.query('SELECT owner_id FROM Listings WHERE id = ?', [id]);
   if (existing.length === 0) throw new AppError('Listing not found', 404);
   if (existing[0].owner_id.toString() !== ownerId.toString()) throw new AppError('Forbidden', 403);
 
   await pool.query(
-    'UPDATE Listings SET title = ?, description = ?, location = ?, monthly_rent = ? WHERE id = ?',
-    [title, description, location, rent, id]
+    'UPDATE Listings SET title = ?, description = ?, location = ?, monthly_rent = ?, room_type = ?, furnishing = ?, sleep_schedule = ?, smoking_habit = ?, drinking_habit = ?, pet_policy = ?, cleanliness = ? WHERE id = ?',
+    [title, description, location, rent, roomType, furnishing, sleepSchedule, smokingHabit, drinkingHabit, petPolicy, cleanliness, id]
   );
   
   const [updated] = await pool.query('SELECT * FROM Listings WHERE id = ?', [id]);
